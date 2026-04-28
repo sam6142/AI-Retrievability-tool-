@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CorpusReport",
+  "$ref": "#/definitions/CorpusReport",
+  "definitions": {
+    "BusinessProfile": {
+      "type": "object",
+      "required": ["business_type", "inferred_services", "inferred_attributes", "inferred_customer_contexts", "confidence", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "business_type": {"type": "string", "minLength": 1},
+        "inferred_services": {"type": "array", "items": {"type": "string"}},
+        "inferred_attributes": {"type": "array", "items": {"type": "string"}},
+        "inferred_customer_contexts": {"type": "array", "items": {"type": "string"}},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "DimensionScores": {
+      "type": "object",
+      "required": ["service", "attributes", "outcome", "occasion", "descriptive_depth"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {"type": "integer", "enum": [0, 1, 2]},
+        "attributes": {"type": "integer", "enum": [0, 1, 2]},
+        "outcome": {"type": "integer", "enum": [0, 1, 2]},
+        "occasion": {"type": "integer", "enum": [0, 1, 2]},
+        "descriptive_depth": {"type": "integer", "enum": [0, 1, 2]}
+      }
+    },
+    "Rationale": {
+      "type": "object",
+      "required": ["service", "attributes", "outcome", "occasion", "descriptive_depth"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {"type": "string"},
+        "attributes": {"type": "string"},
+        "outcome": {"type": "string"},
+        "occasion": {"type": "string"},
+        "descriptive_depth": {"type": "string"}
+      }
+    },
+    "ReviewLabelerOutput": {
+      "description": "Raw output from the per-review labeler LLM call. Bucket is NOT included — computed by classify.bucket_from_labels().",
+      "type": "object",
+      "required": ["labels", "relevance", "confidence", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "labels": {"$ref": "#/definitions/DimensionScores"},
+        "relevance": {"type": "boolean"},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "rationale": {"$ref": "#/definitions/Rationale"}
+      }
+    },
+    "ScoredReview": {
+      "description": "A review after labeling and classification. The 'bucket' field is computed by classify.bucket_from_labels(), not by the LLM.",
+      "type": "object",
+      "required": ["review_id", "text", "labels", "relevance", "confidence", "bucket", "rationale"],
+      "additionalProperties": true,
+      "properties": {
+        "review_id": {"type": "string"},
+        "text": {"type": "string"},
+        "rating": {"type": ["integer", "null"]},
+        "date": {"type": ["string", "null"]},
+        "labels": {"$ref": "#/definitions/DimensionScores"},
+        "relevance": {"type": "boolean"},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "bucket": {
+          "type": "string",
+          "enum": ["service_attribute_matchable", "trust_quality_matchable", "low_retrievability"]
+        },
+        "rationale": {"$ref": "#/definitions/Rationale"}
+      }
+    },
+    "ReportMetadata": {
+      "type": "object",
+      "required": ["tool_version", "rubric_version", "generated_at", "input_file", "input_review_count_raw", "input_review_count_after_cleaning"],
+      "additionalProperties": true,
+      "properties": {
+        "tool_version": {"type": "string"},
+        "rubric_version": {"type": "string"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "input_file": {"type": "string"},
+        "input_review_count_raw": {"type": "integer", "minimum": 0},
+        "input_review_count_after_cleaning": {"type": "integer", "minimum": 0},
+        "user_oneliner": {"type": ["string", "null"]}
+      }
+    },
+    "CorpusStats": {
+      "type": "object",
+      "required": ["total_reviews", "by_bucket", "ai_visibility_pct", "dimension_coverage_pct", "weakest_dimension", "confidence_distribution"],
+      "additionalProperties": false,
+      "properties": {
+        "total_reviews": {"type": "integer", "minimum": 0},
+        "by_bucket": {
+          "type": "object",
+          "required": ["service_attribute_matchable", "trust_quality_matchable", "low_retrievability"],
+          "additionalProperties": false,
+          "properties": {
+            "service_attribute_matchable": {"type": "integer", "minimum": 0},
+            "trust_quality_matchable": {"type": "integer", "minimum": 0},
+            "low_retrievability": {"type": "integer", "minimum": 0}
+          }
+        },
+        "ai_visibility_pct": {"type": "number", "minimum": 0, "maximum": 100},
+        "dimension_coverage_pct": {
+          "type": "object",
+          "required": ["service", "attributes", "outcome", "occasion", "descriptive_depth"],
+          "additionalProperties": false,
+          "properties": {
+            "service": {"type": "number", "minimum": 0, "maximum": 100},
+            "attributes": {"type": "number", "minimum": 0, "maximum": 100},
+            "outcome": {"type": "number", "minimum": 0, "maximum": 100},
+            "occasion": {"type": "number", "minimum": 0, "maximum": 100},
+            "descriptive_depth": {"type": "number", "minimum": 0, "maximum": 100}
+          }
+        },
+        "weakest_dimension": {
+          "type": "string",
+          "enum": ["service", "attributes", "outcome", "occasion", "descriptive_depth"]
+        },
+        "confidence_distribution": {
+          "type": "object",
+          "required": ["high", "medium", "low"],
+          "additionalProperties": false,
+          "properties": {
+            "high": {"type": "integer", "minimum": 0},
+            "medium": {"type": "integer", "minimum": 0},
+            "low": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "CorpusReport": {
+      "description": "Final report.json output. Top-level shape matches report-design.md.",
+      "type": "object",
+      "required": ["metadata", "business_profile", "corpus_stats", "examples_per_bucket", "scored_reviews"],
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {"$ref": "#/definitions/ReportMetadata"},
+        "business_profile": {"$ref": "#/definitions/BusinessProfile"},
+        "corpus_stats": {"$ref": "#/definitions/CorpusStats"},
+        "examples_per_bucket": {
+          "type": "object",
+          "required": ["service_attribute_matchable", "trust_quality_matchable", "low_retrievability"],
+          "additionalProperties": false,
+          "properties": {
+            "service_attribute_matchable": {"type": "array", "items": {"type": "string"}},
+            "trust_quality_matchable": {"type": "array", "items": {"type": "string"}},
+            "low_retrievability": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "scored_reviews": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/ScoredReview"}
+        }
+      }
+    }
+  }
+}

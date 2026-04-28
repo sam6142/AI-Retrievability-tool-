@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "review-tool"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic",
+    "pandas",
+    "jsonschema",
+    "typer",
+    "python-dotenv",
+    "pytest",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+review-tool = "review_tool.analyze:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["review_tool*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "fast: deterministic tests that make no LLM calls",
+    "slow: tests that make real LLM API calls; run with pytest -m slow",
+]

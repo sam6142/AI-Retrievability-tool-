@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReviewLabelerOutput",
+  "$ref": "#/definitions/ReviewLabelerOutput",
+  "definitions": {
+    "DimensionScores": {
+      "type": "object",
+      "required": ["service", "attributes", "outcome", "occasion", "descriptive_depth"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {"type": "integer", "enum": [0, 1, 2]},
+        "attributes": {"type": "integer", "enum": [0, 1, 2]},
+        "outcome": {"type": "integer", "enum": [0, 1, 2]},
+        "occasion": {"type": "integer", "enum": [0, 1, 2]},
+        "descriptive_depth": {"type": "integer", "enum": [0, 1, 2]}
+      }
+    },
+    "Rationale": {
+      "type": "object",
+      "required": ["service", "attributes", "outcome", "occasion", "descriptive_depth"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {"type": "string"},
+        "attributes": {"type": "string"},
+        "outcome": {"type": "string"},
+        "occasion": {"type": "string"},
+        "descriptive_depth": {"type": "string"}
+      }
+    },
+    "ReviewLabelerOutput": {
+      "description": "Raw output from the per-review labeler LLM call. Validated immediately after the API response. Bucket is NOT included — it is computed downstream by classify.bucket_from_labels(). additionalProperties is true so that spurious fields (e.g. a bucket field the model may include) are silently ignored rather than failing validation.",
+      "type": "object",
+      "required": ["labels", "relevance", "confidence", "rationale"],
+      "additionalProperties": true,
+      "properties": {
+        "labels": {"$ref": "#/definitions/DimensionScores"},
+        "relevance": {"type": "boolean"},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "rationale": {"$ref": "#/definitions/Rationale"}
+      }
+    }
+  }
+}

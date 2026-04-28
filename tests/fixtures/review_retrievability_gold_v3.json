@@ -1,0 +1,3053 @@
+{
+  "fixture_metadata": {
+    "version": "v3",
+    "source": "Yelp Restaurant Reviews dataset (Kaggle) + 40 user-contributed reviews",
+    "vertical": "bakery / café / dessert (single-vertical prototype scope)",
+    "businesses_covered": [
+      "Amélie's French Bakery (Charlotte) — 40 reviews",
+      "Bouchon Bakery (Las Vegas) — 6 reviews",
+      "Carlos Bakery (Las Vegas) — 6 reviews",
+      "Donut Bar (Las Vegas) — 6 reviews",
+      "Sprinkles (Las Vegas) — 6 reviews",
+      "Presti's Bakery (Cleveland) — 6 reviews",
+      "85°C Bakery Café (Las Vegas) — 6 reviews",
+      "Churn (Phoenix) — 6 reviews",
+      "Novel Ice Cream (Phoenix) — 6 reviews",
+      "Jeni's Splendid Ice Creams (Charlotte) — 6 reviews",
+      "Sweet Republic (Scottsdale) — 6 reviews"
+    ],
+    "total_reviews": 140,
+    "real_yelp_count": 100,
+    "amelies_real_yelp_count": 40,
+    "user_contributed_count": 40,
+    "labeler": "Claude (single labeler)",
+    "labeled_at": "2026-04-27",
+    "rubric_version": "v2 (locked)",
+    "limitations": [
+      "Single-labeler synthetic gold set. Same model that will be evaluated also produced the labels — agreement metrics computed against this fixture will be optimistically biased.",
+      "Single vertical (bakery/café/dessert). Rubric behavior on service businesses (dentist, salon, etc.) is untested.",
+      "40 of the 100 reviews are LLM-generated (user-provided) rather than real Yelp reviews. The 20 'medium' contributed reviews lean stylized — they describe a generic polite service interaction without the food/atmosphere texture of real bakery reviews. They still test the rubric's ability to recognize 'trust language without specifics' as bucket-2 candidates, but they are not authentic in texture.",
+      "Inter-annotator agreement is unknown — no second labeler has scored any subset.",
+      "Treat as iteration fixture and prompt-development regression test, not as a benchmark for accuracy claims."
+    ],
+    "intended_uses": [
+      "Smoke-test that the LLM labeler produces parseable JSON in the right schema",
+      "Catch gross labeler failures (constant outputs, hallucinated dimensions)",
+      "Regression test while iterating on labeler prompts",
+      "Surface concrete rubric ambiguities through disagreement analysis",
+      "Provide bucket distribution for sanity-checking corpus aggregation logic"
+    ],
+    "not_intended_for": [
+      "Reporting accuracy numbers ('our labeler hits X% agreement with gold')",
+      "Comparing different labeler models rigorously",
+      "External validation claims to investors, partners, or technical reviewers",
+      "Deciding whether the prototype is shippable"
+    ],
+    "expansion_yelp_count": 60,
+    "filename": "review_retrievability_gold_v3.json"
+  },
+  "rubric": {
+    "version": "v2 (locked 2026-04-27)",
+    "dimensions": {
+      "service": "Names a specific service/product. 0 = no service named. 1 = generic category mention only ('pastries', 'desserts', 'coffee'). 2 = specific named item ('salted caramel brownie', 'pistachio macaron', 'Madagascar vanilla ice cream').",
+      "attributes": "Describes qualities of experience or place. 0 = no attributes. 1 = generic adjectives ('friendly', 'nice', 'good'). 2 = specific concrete attributes, especially OPERATIONAL ones (24/7, free wifi, gluten-free options, accepts insurance, $1.50 donuts, no indoor seating). Operational attributes are weighted higher than experiential ones — when in doubt between 1 and 2, presence of operational specifics tips to 2.",
+      "outcome": "Describes what was accomplished/resolved/experienced as a result. 0 = no outcome. 1 = mentioned. 2 = specific outcome. NOTE: This dimension fires low for consumption businesses (bakery/café). That is expected — a customer eating a croissant doesn't have the problem-resolution arc that a customer at a dentist or plumber does. Low frequency for this dimension in this vertical is not a labeling failure.",
+      "occasion": "Indicates context of visit. 0 = no occasion. 1 = mentioned ('after dinner', 'on vacation'). 2 = specific occasion ('birthday celebration', 'late-night post-bar', 'first time trying tarts').",
+      "descriptive_depth": "Concrete specific reasoning vs generic praise. 0 = generic ('great', 'amazing', 'highly recommend'). 1 = some specifics. 2 = highly concrete with sensory detail, comparisons, or operational specifics."
+    },
+    "buckets": {
+      "service_attribute_matchable": "Surfaces for specific-intent queries about products/attributes",
+      "trust_quality_matchable": "Surfaces for trust/reputation queries — concrete reasoning without specific service",
+      "low_retrievability": "Insufficient specific language for any LLM query to anchor on"
+    },
+    "classification_rule_LOCKED": "service>=2 OR attributes>=2 → service_attribute_matchable. Else if descriptive_depth>=1 → trust_quality_matchable. Else low_retrievability. NOTE: service=1 (generic category) NO LONGER qualifies for bucket 1 on its own. This is the v2 tightened threshold.",
+    "framing_reminder": "This is a retrievability diagnostic, not a quality judgment. Negative reviews can be high-retrievability when concrete. Generic positive reviews are low-retrievability despite high ratings. Confidence is calibrated to per-review labelability, not rubric clarity — a 'low' confidence label means the review itself is genuinely hard to score."
+  },
+  "reviews": [
+    {
+      "review_id": "r_001",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 8,
+      "text": "Some of the best french bread outside France.",
+      "labels": {
+        "service": 1,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "[v3 re-label under locked rubric] French bread is a generic category (service=1). Comparative claim adds slight depth. Under tightened rule (service>=2), service=1 no longer qualifies for bucket 1. depth=1 puts it in bucket 2. Medium confidence — bucket flipped from v2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_002",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 24,
+      "text": "A great little French bakery in NoDa. Love it to death. I'm often found there after my usual stops at a neighboring hookah bar.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "No specific service. 'Little' mild attribute. 'After hookah bar' borderline occasion. depth=1 from autobiographical specificity. Low confidence — could swing low_retrievability.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_003",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 16,
+      "text": "Beautiful bakery with tasty food! But expect a wait on the weekends because it's pretty popular",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "'Wait on weekends' is operational attribute but only one signal — sticks at 1. depth=1 for the wait detail. Bucket 2 by depth>=1.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_004",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 17,
+      "text": "Best desserts and breads in town. I really enjoy the atmosphere, service, and speed of the staff.",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 BUCKET FLIP from v2] Generic listing of category words. Under v2 rubric (service>=1 → bucket 1) this was bucket 1; under v3 locked rubric (service>=2) it falls to low_retrievability. depth=0 — no concrete reasoning. This is exactly the kind of review the threshold tightening was designed to catch. High confidence in the new bucket.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_005",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 15,
+      "text": "Love Amelie's coffee & bacon, egg, & cheese croissant! I add spinach & it's wonderful!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Specific named items: bacon-egg-cheese croissant, spinach add-in, coffee. service=2. Short but concrete.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_006",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 17,
+      "text": "I love the selection of amazing pastries and goodies they offer. It's always consistent and always yummy!",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 BUCKET FLIP from v2] Generic category mention. Under v3 tightened rule, service=1 no longer enough. depth=0. Falls to low_retrievability. High confidence in flip.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_007",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 19,
+      "text": "Love getting dessert here! My favorite is the Salted Caramel Brownie! Really though, everything I've eaten here is delicious!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Salted Caramel Brownie specifically named (signature item). service=2 unambiguous.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_008",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 17,
+      "text": "Great food! I definitely recommend this establishment. They definitely have great customer service that matches the food.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Pure generic praise. Textbook low-retrievability.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_009",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 5,
+      "text": "Best salted caramel brownie ever.",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Five words, names specific item, high confidence. Brevity ≠ low retrievability when item is specific.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_010",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 14,
+      "text": "Yummmm. Go here. You won't regret it. It's worth the long wait in line.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "'Long wait in line' is one operational signal. Otherwise pure generic. Low confidence — bucket on the edge.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_011",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 65,
+      "text": "What can I say about Amelies! This is the best bakery ever! We visited twice while on a short vacation. It was so hard to choose which items to get. The staff was nice and also patient while we made our choices. If we ever go back to North Carolina, this bakery will definitely be on our list of places to go. Good coffee too.",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "[v3 BUCKET FLIP from v2] Coffee generic (service=1). 'Patient while we chose' attribute (1). Tourist visit specific occasion (2). Under v3 rule service=1 + attributes=1 doesn't make bucket 1; depth>=1 puts it bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_012",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 39,
+      "text": "So I decided to get a late bite to eat and drink...I came across this awesome cafe. I have never had a tart or a macaroon until I visited Amelie's, and let me tell you, I wasn't let down.",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Tart and macaron named (service=2). Late bite occasion (1). First-time experience outcome (1).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_013",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 46,
+      "text": "Ooh la la.... I felt like I was in an European cafe. This place is so fancy but inviting. Mona Lisa everywhere and every corner of this place has a cute place to sit and enjoying your time there. Food was delish! Great place for pictures.",
+      "labels": {
+        "service": 0,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "European feel, Mona Lisa decor, cute corners — multiple concrete attributes (2). Photo-worthy occasion (1). Bucket 1 via attributes>=2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_014",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 2,
+      "word_count": 29,
+      "text": "Amelie's was filthy and it makes it uncomfortable to imagine eating there when everything in the building looks so unclean, including the pastry case where they store the food.",
+      "labels": {
+        "service": 0,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Concrete negative attributes — filthy, unclean pastry case (2). Negative review, high retrievability.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_015",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 70,
+      "text": "BAKERY and ATMOSPHERE: The pistachio macaroon is phenomenal! The atmosphere here is quiet, good for studying in secluded areas, catching up with friends, or just hanging out to read. There are many nooks and crannies of hidden seating areas, which I thought was very cool. They have a unique decor French theme with lights, antique looking furniture, paintings, and odd-Frenchy decorations. Definitely stop by for a pastry--you won't regret it!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Pistachio macaron (service=2). Quiet, secluded nooks, French decor specifics (attributes=2). Studying/catching up/reading occasions (=2). Top-tier retrievability.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_016",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 3,
+      "word_count": 47,
+      "text": "Great staff! A little disappointed with the vanilla strawberry petite cake because the cake was hard and the only strawberry was the one on top...there are other options that looked wonderful but this was the only thing I tried, and for first impressions--I give it 3 stars.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Vanilla strawberry petite cake named (service=2). Concrete failure mode (depth=2). Negative-tilted but high retrievability.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_017",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 66,
+      "text": "A super creative atmosphere, relaxing and eclectic. The soups and sandwiches are delicious. The bakery items are particularly fantastic. Our family favorites include the chocolate croissants and the miniature mousse. When ordering soup and sandwiches carve out a lot of time. Ordering bakery items is very efficient. Unfortunately they are not vegan friendly which is tough since my daughter is vegan, but I still recommend visiting.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Chocolate croissants, miniature mousse (service=2). Slow soup ordering, efficient bakery, NOT vegan-friendly = operational attributes (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_018",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 46,
+      "text": "Great food and customer service Went to get some pastries and got the great aspargus spinach leek soup, and a cafe mocha too. Very nice employees, carried my food to my table so I wouldn't spill it. Love that soup and the pastries are always great...",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Asparagus-spinach-leek soup, cafe mocha (service=2). Carried food to table = concrete service moment (depth=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_019",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 39,
+      "text": "What a fantastic bakery! Lines are long here and for good reason. Nice interior and the desserts are fantastic. Worth it to stop in if you are ever in the Charlotte area. A lot of UNCC students stop here.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Long lines + UNCC student crowd = concrete attributes (2). Bucket 1 via attributes>=2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_020",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 56,
+      "text": "Looked up this place when I was trying to find a good place for dessert on the day of Christmas Eve, one of the best dessert places open 24/7. Tried few of the pastries here and they melt in your mouth. I never tried anything other than cakes and pastries here and I just love them.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "24/7 + dessert place = operational attributes (2). Christmas Eve = specific occasion (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_021",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 180,
+      "text": "Yes, the salted carmel brownies are tasty. So are the eclairs and the all the petit something or others and macaroons. Its a french bakery, that stuff is supposed to be good. Let's be honest, the place is popular because they are open 24 hours a day. The underage hipsters see it as a great place to all hang out and sit in the cushy little seating areas amongst the odd paint by numbers art and the victorian mish mash and talk about their twitter accounts, tight jeans, and shaggy haircuts without their parents thinking they are getting in trouble. For the rest of us, its that awesome place to get that last edible nightcap after all the bars have stopped serving food or closed. I yearn for a sausage egg and cheese croissant after a night of staying on the edge of the mosh pit at the Milestone. Yes, I have been there during the light of day. The wifi is a little slow, but it is a nice quiet joint if you need to plow through some work.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Loaded with retrieval signal across all dimensions.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_022",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 3,
+      "word_count": 198,
+      "text": "If you are looking for a wide variety of sweet treats and a large french press full of coffee then Amelie's is a good choice. If, however, you are looking for a seat actually inside the establishment and internet that actually works I suggest you look elsewhere. See the thing is, Amelie's is a great concept, a 24 hour bakery/coffee shop/food spot, and they execute pretty well, so naturally they are always mobbed. The sheer magnitude of patrons cripples the net. Also, can someone please tell me why there is always some guy at a packed coffee house who thinks everyone needs to hear him play the same progression on his acoustic guitar 40 times, because I don't understand it, but Amelie's sure has one. On the plus side, if you get stuck out in the atrium of the strip center where they have extra seating the friendly Amelieans will still bring you your food as if you were actually inside the bakery. I suggest just popping by, however, to pick up a dozen or three salted caramel brownies. Then you can take them elsewhere and eat them all in privacy while surfing the interwebs...that sounds healthy, right?",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "French press, salted caramel brownies (service=2). 24hr, broken wifi, atrium seating (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_023",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 1,
+      "word_count": 119,
+      "text": "I requested for a mixed berry tart to be warmed up. In the past the servers advise that they normally don't warm it up but they gladly assist with my request. The manager refused to warm it up this time because it \"falls apart\". I advised that I was the customer and that I was willing to take the chance because the tart has never fallen apart and that it wasn't an issue if it did. The manager refused once more and showed no type of interest in keeping my business. Very disappointing experience at this location and with the current staff for a simple request. I wouldn't recommend this location. Needless to say I didn't purchase the tart.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Mixed berry tart named (service=2). Manager inflexibility (attribute=1). Full incident narrative (depth=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_024",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 99,
+      "text": "This is a really nice bakery with a wide variety of choices. The pastry selection seems endless and there is something for everyone. My personal favorite is the fresh fruit tart and a mercotter coffee. I do think they should have more flavors of coffee because the choices are not plentiful, but otherwise it's a nice cafe bakery. The atmosphere is very quiet and is usually filed with college students trying to do homework. If you want an environment where you don't feel like you have to keep your voice down, the downtown location is probably better for you.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Fresh fruit tart, mercotter coffee (service=2). Quiet, college students, voice-down expectation (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_025",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 162,
+      "text": "I absolutely loved this café! We got here early for a bite to eat in the morning. They have tons of pastry items to chose from. I got their seasonal pastry which was spinach and feta cheese on a croissant like bread. It was delicious! My husband got a breakfast sandwich with spinach, portobello mushroom, and mozzarella cheese. It was also good. I got a lavender latte which has just the right amount of sweetness. My husband got a Honduras coffee.. made in a French press. They do not do pour overs here. They carry coffee beans roasted by First Impressions. This place is open 24/7, has free wifi and lots of seating. It's probably the go-to place for students doing late night studying. Everything here has a French touch or reference to Paris. Group of people sitting and a place to visit if you're traveling and want to grab something to eat. Staff was nice and the restaurant was very clean!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Maximum signal across all dimensions.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_026",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 2,
+      "word_count": 128,
+      "text": "At first I was taken with the Ambience. The pastries are works of art. And some of the pastries are delightful in taste. But all in all, I find this place overrated and overpriced. Sure, some pastries warrant a price that reflects the time involved in their making, but I've found myself and my family eating some only because they cost so damned much, there is no way I'm throwing them out. It is, however, a fun place to meet for business or hang with friends. Definitely more eclectic, than luxurious in decor. The primary reason I am not eager to return is the lack of love from the staff. When I am paying top dollar for something, I insist that at least pretend to value my business.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Overpriced, eclectic-not-luxurious, indifferent staff = concrete attributes (2). Business meetings + friends occasion (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_027",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 165,
+      "text": "We stopped by Amelie's after dinner and I was quite impressed. The place was huge with plenty of seating. I really like the way they have the place decorated with bright colors and lots of crazy art on the walls. They had a wide variety of pastries to choose from which automatically makes them worthy of 4 stars in my book. I tried a chocolate mousse cup and it was delightful! It was so sweet I thought I'd have to stop after only 2 bites, but before I knew it the whole thing was gone. I just couldn't stop myself! The only drawback to this place was it was incredibly busy when we stopped by at 8:30pm on a weekday. This is the type of place that I'd normally like to get a pastry and coffee and have a seat to relax for a bit. With all the commotion I didn't think we'd be able to enjoy ourselves so we got our treats to go.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Chocolate mousse cup (service=2). 8:30pm weekday busy detail = great retrieval signal.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_028",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 2,
+      "word_count": 95,
+      "text": "First, the interior is a huge kitsch. Second, the food wasn't good. I orderd tartines with ham, brie and figs. The bread was ok, nothing special. Instead of normal ham there was fried bacon(?). Brie was melted and tasted like ordinary melted cheese and figs weren't fresh (write in the menu that the figs are from jam). I paid $6 for that. I think, it didn't worth it. I haven't tried pastry, so I can't tell anything about. Maybe it's good and people come here because of it, so that is why not 1 star.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Tartines with ham/brie/figs, $6 price (service=2). Granular ingredient complaint (depth=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_029",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 145,
+      "text": "If you want a place that has an eclectic mix of European decor to inspire your internet exploring or sounds of the accordion in the background music setting your mood to read, this is the place for you. This is a much more laid back take on the coffee shops you may be used to. There is plenty of seating for any number of people. Even as a solo guest you have options of a single chair with a side table or a table seating 6. Do what you want! I haven't even started on the desserts! The pastries, especially the macaroons are amazing! The staff is very friendly and are willing to engage in quality service (which may be a bit different from actual French restaurants). The tea is fantastic! Be sure to add a bit of steamed almond milk to your earl grey.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Macarons, earl grey with steamed almond milk (service=2). Accordion music, varied seating (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_030",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 91,
+      "text": "With over 350 reviews, I'm not really sure much is left to be said about Amelie's. So I'll save my eloquent writing skills for another review and just tell you to get a Chocolate Croissant. It's....Flaky. Chocolaty. Warm. Delicious. Add a cup of coffee and just sit back, and get the full experience. Take in the tons of small eclectic details and people buzzing around and you may just feel as if you're in a cafe is Paris! Okay...maybe not Paris....but I really liked this place and I'll definitely be back!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Chocolate croissant with sensory descriptors (service=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_031",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 4,
+      "text": "Great salted caramel brownies.",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Specific signature item in 4 words. service=2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_032",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 5,
+      "text": "awesome pastry selection every time---amazing!!",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 BUCKET FLIP from v2] Pastry generic. Selection borderline attribute. Under v3 rule falls to low_retrievability.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_033",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 7,
+      "text": "Great atmosphere - 24/7 love the food/Dessert",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "24/7 + atmosphere = two attribute signals (2). Bucket 1 via attributes>=2.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_034",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 7,
+      "text": "Great desert! Chi Tea latte was amazing!!!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Chai tea latte specifically named (service=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_035",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 9,
+      "text": "Very good sweets and treat. Very laid back place",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Borderline service score. Laid back as attribute (1). Falls to low_retrievability.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_036",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 10,
+      "text": "I love Amelie's every time I go! They never disappoint.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Pure generic loyalty statement.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_037",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 14,
+      "text": "Great selection of coffee and light snacks (or heavily saccharine). Open 24/7. Good overall.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "24/7 + 'heavily saccharine' = two concrete attributes (2). Bucket 1.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_038",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 14,
+      "text": "You have not done your bucket list unless you savor the bakery of Amelie's",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Hyperbolic generic praise.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_039",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 4,
+      "word_count": 15,
+      "text": "Very good pastries and breakfast. Accommodating to my gluten- free wife. Good coffee as well.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Gluten-free accommodation = concrete operational attribute. Bucket 1 via attributes>=2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_040",
+      "source": "yelp",
+      "business": "amelies_clt",
+      "rating": 5,
+      "word_count": 15,
+      "text": "A little pricey but top notch and service is exceptional! Everyone's so friendly and helpful.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Multiple generic attribute words but no concrete content. Low confidence — bucket on edge.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_041",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 96,
+      "text": "Love this place! The ice cream is so delicious! Their flavors are not the ordinary ones you find in an ice cream shop, my kids love Cookie Monster. Such a brilliant idea to combine ice cream and a donut, my two favorite sweets. The donut is warm, but doesn't melt the ice cream! How do they do that?.... the shop is small without in door seating, but it is nice and very clean. I don't live close, but it is definitely worth the drive. If they ever consider expanding, I hope they come to north Peoria!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Cookie Monster flavor named, ice cream + donut combo (service=2). No indoor seating, small shop, clean = operational attributes (2). Concrete throughout.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_042",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 5,
+      "word_count": 45,
+      "text": "Really love this place ! I've been to the one in SD many times! This place never disappoints and they always have awesome new idea to do with doughnuts. And there Ice cream doughnut is awesome! That's a much have!! Highly recommend this place !!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Ice cream doughnut named (service=2). Otherwise mostly generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_043",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 5,
+      "word_count": 18,
+      "text": "Love this place. Great cupcakes. Super moist and super yummy. Red velvet and rainbow confetti cake are great",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Red velvet, rainbow confetti specifically named (service=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_044",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 3,
+      "word_count": 20,
+      "text": "Great pastries but they need more baker or staff or something always have to wait for the things I want",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Pastries generic (1). Staffing/wait operational attribute but only one signal (1). depth=1 for the staffing observation. Bucket 2 by depth>=1.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_045",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 5,
+      "word_count": 24,
+      "text": "Amazing flavors. Great service even though there was a line. Fresh made waffle cones smell and taste amazing. Try the trio and share it.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Fresh-made waffle cones, trio (service=2). Line as operational attribute (1).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_046",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 4,
+      "word_count": 83,
+      "text": "We picked up some desserts after early dinner. They have a lot of different ones to choose from, but my kid wanted a rainbow cake which could be seen everywhere in Vegas (they sold it on a machine at the pizza cake as well), I just went for their class lobster tail. I love my lobster tail; it's so crispy and not overly sweet. Desserts are not too cheap, for 2 items, I spent 15 dollars here, but hey you are in Vegas!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Rainbow cake, lobster tail (service=2). $15-for-2-items pricing detail (depth=2). After-dinner occasion (1).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_047",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 3,
+      "word_count": 87,
+      "text": "I was super excited to visit this bakery as I'm sure most people are. My daughter is a huge Cake boss fan. When we got there we were helped by a guy, i didn't get his name. But I'll explain him, he was tall, feminine and had really bad skin. He was sooo rude and completely killed the experience for myself and my family. I give 3 stars because we're still a big fan of the pastries and of Buddy but that guy needs to go.. ASAP",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Pastries generic (1). Rude staff = attribute (1, just one signal). Cake Boss fan family visit = occasion (1). depth=2 from staff incident detail. Bucket 2 by depth>=1.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_048",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 3,
+      "word_count": 96,
+      "text": "Popped in to try a vegan doughnut and tried the creme brulee. I'm sure it's more traditional creme brulee so the topping was crisp and hard. Not my cup of tea BUT someone else may love it. The vegan selection was smaller than I thought because there were only 2 options at the time I went in but it's nice they have some. The filling was good and the people nice. Again the review is based on my taste and preferring a glaze versus the crust of the creme brulee. So don't hesitate to try it.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Vegan doughnut, creme brulee (service=2). 2 vegan options operational attribute, plus general selection (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_049",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 3,
+      "word_count": 19,
+      "text": "I just got Netflix over a week ago and saw the owner of sprinkles on Sugar Rush awesome show",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": false,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Off-topic — not actually about the bakery experience. Relevance=false. Low retrievability by default.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_050",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 4,
+      "word_count": 284,
+      "text": "Although I don't visit cupcake shops as often as I did before I still consider myself to be a cupcake connoisseur. Finally the infamous Sprinkles opens in Vegas. I have been here 3 times already and I can say the best thing I got from here is the Sprinkles Sundae, which consisted of carrot cupcake and salted caramel ice cream. Absolutely amazing! The best carrot cupcake I've had and that certainly means a lot considering I've tried carrot cupcakes from multiple cupcake places (Cupcake Station from Michigan and Kara's Cupcakes in San Francisco). The thing that makes Sprinkles' carrot cake so unique is the long strands of carrot, om nom nom. The salted caramel ice cream is divine as well, if you are a caramel fan. The consistency of the ice cream is really smooth, almost like gelato, but not quite there. I've ordered the salted caramel ice cream on it's own and yes it is a bit salty, but if you have it with a cupcake it is delicious. The people working at ice cream section even warn you that it's salty by itself so I highly recommend having it with something else. My first visit I had lemon meringue cupcake with vanilla ice cream which was just a okay, but nothing to run home about. I am certainly a fan now, however when I first tried Sprinkles at their original Beverly Hills location I didn't enjoy it as much. The location is really pretty since it is located at the Linq. The staff members are all nice and helpful. There is a cupcake ATM present, however I would just prefer to go inside since the cupcakes should be more fresh from there.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Sprinkles Sundae (carrot cupcake + salted caramel ice cream), lemon meringue cupcake, cupcake ATM (service=2). Linq location, ATM, salted-caramel warning = operational (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_051",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 5,
+      "word_count": 25,
+      "text": "!!!!! Best ice cream ever ! No lie - I thought this place was all hype but after coming here, I'm literally hooked and obsessed.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Pure generic enthusiasm. No specifics.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_052",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 1,
+      "word_count": 96,
+      "text": "The customer service sucks. They overcharged my food when I only bought 4 items and not 6. When I went to get a refund, they charged me again instead of refunding the money they owe me back. I once again, have to go back in the store to ask for a refund and finally this time I ask them to refund it with dollar bills instead of doing it through a card which they did. If you do indeed go here and buy their food, make sure to check your receipt so you don't get overcharged.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "No specific service. Overcharging = operational attribute but one signal (1). Outcome=1 (refund eventually given). depth=2 from incident specificity. Bucket 2 by depth>=1.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_053",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 60,
+      "text": "AMAZING. Amazing ice cream, amazing waffles and donuts, amazing treats. A wonderful concept and a creative take on a classic dessert. We love love love Novel. The owners are friendly, genuine people. The atmosphere is great and the choices are wonderful. The ice cream is handmade and truly tastes authentic. I would (and do) recommend Novel to all my friends!",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic categories (waffles, donuts, ice cream — no specific items). Mostly 'amazing' filler. Bucket 3 under v3 rule.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_054",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 3,
+      "word_count": 317,
+      "text": "Sweet Pea and I decided on one recent night to rail down to Churn and see what all of the fuss was about. We'd heard a lot about it and its restaurant counterpart, Windsor. Bottom line, it was good ice cream. It was not swoon-worthy. I will not be getting in my car making a mad late night ice cream run just to get Churn ice cream. But, although I am definitely an ice cream person, I couldn't really imagine myself doing that for any particular place's ice cream. We had no crystallization issues like other reviewers mentioned- the texture was good, heavy, creamy. I tried the Madagascar vanilla, which was rich and vanilla-y as you'd expect, but I ended up ordering the coconut, in a cup, with the salted caramel topping. Both the ice cream and the topping were good. The one thing I will say about the salted caramel (and I REALLY like salted caramel) was that it was overpowering in terms of flavor. Next time I'd probably just get it with the vanilla. Or maybe chocolate if I felt frisky. And I really want to try that pretzel cone thing they have there, man that looked awesome. Sweet Pea tried the bubble gum and ended up with the blackberry with salted caramel (yeah...\"interesting\" choice there Sweet Pea) and had the same impressions pretty much that I did. It was good. He did keep saying over and over again that the bubble gum flavor was delightful and that next time he was going to order it. I will say that the reviewer that commented in the vast disparity between scoop sizes was right on. Sweet Pea's was 1.5 to 2 times larger than mine. The atmosphere is cute. Sweet Pea did not like the layout, because the place gets quite busy, and there is no organized line nor even a really good area for themself.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Madagascar vanilla, coconut with salted caramel topping, bubble gum, blackberry, pretzel cone (service=2). Inconsistent scoop sizes, no organized line, busy = operational attributes (2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_055",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 2,
+      "word_count": 55,
+      "text": "I'm not going to say it was bad, but don't see what's the big hype. I drove 45 miles to try it. I had the Belg choc. As mention it was not bad just taste like regular ice cream to me. I'll give it another shot, but for now not jumping on the band wagon",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Belgian chocolate flavor named (service=2). Outcome=1 (didn't see the hype, will try again).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_056",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 4,
+      "word_count": 16,
+      "text": "My favorite little italy bakery. Love the whole experience of visiting. Mini cheesecakes w fruit topping...mmmmm",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Mini cheesecakes with fruit topping named (service=2). Little Italy location detail.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_057",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 351,
+      "text": "If I could give this place 100 stars I would. I was in Arizona for vacation, and was down in Phoenix for one last day. The temperature reached to 105 degrees and I was in need for something cold to eat-- of course, I wanted ice cream. After looking through many reviews I saw that Novel's reviews were very good and decided to take my dad there. It's a small shop located amongst other small shops (really cute) and although there was no indoor seating to avoid the scorching heat, the ice cream totally took away from all that (not to mention we stood inside and talked to the owners and workers, out of the heat). Speaking of the staff, they were all amazingly kind, warm, and welcoming, making us feel very at home in their little shop. Immediately walking in, one of the owners explained their ice cream to us, explaining how it was hand made with rotating flavors. I greatly appreciated that, and he offered us to try as much as we'd like! I got what they called the Leslie Knope-- a waffle ice cream sandwich, but they also offer a donut sandwich which I thought was extremely appetizing as I saw someone take it out. I tried their Cookie Monster in between the two waffles, and it was amazing! I thought it was so good, I wanted to try more and I sampled their sorbets, the Freckled Lemonade and Honeydew Sorbet. Both were amazing and I got another scoop, because I couldn't help myself. My dad had the same idea and got something called the Bourbon(something something) and the Fat Elvis. I got to try quite a lot of flavors along with those and they were so rich and tasty! I highly recommended what I listed above. Because we stayed inside, one of the owners was so friendly to my dad and I got to chat with the others, who just made friendly conversation with me. I absolutely love the vibe and of course, the ice cream, and if I'm ever in Phoenix again I'll be stopping by!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Leslie Knope waffle sandwich, Cookie Monster, Freckled Lemonade and Honeydew sorbets, Fat Elvis (service=2). No indoor seating, hand-made rotating flavors, sample-as-much-as-you-like (attributes=2). Vacation in 105-degree Phoenix (occasion=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_058",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 5,
+      "word_count": 20,
+      "text": "Open now!!! Grand Opening isn't until December 6th. Big fan, glad to have them here in Las Vegas now. D'licious!!!",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Mostly an announcement. Grand opening date is occasion (1). Otherwise no specifics.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_059",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 5,
+      "word_count": 62,
+      "text": "Jeni's has high quality ice cream. It's meant to melt on your tongue so get a waffle or cake cone! The employees are very friendly & helpful helping you decide what flavor you'd like to have. Dark Chocolate Truffle is made with coconut cream - it's dairy free and MY FAVORITE. My second favorite is Coffee with Cream and Sugar - delicious!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Dark Chocolate Truffle, Coffee with Cream and Sugar, waffle/cake cones (service=2). Dairy-free option = operational attribute, plus melt-on-tongue ice cream concept (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_060",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 5,
+      "word_count": 85,
+      "text": "OMG I really thought they only served ice cream that tastes this good in heaven. 'Who'd a thunk' of putting REAL mint in Mint Chocolate Chip Ice Cream. Ben and Jerry....you've been replaced by Jan and Helen! Give them a couple more years and these former New York Stock Brokers will be ringing the bell on WALL STREET when Sweet Republic goes public! My only complaint is that I just wish they were located across the street so I could walk for ice cream....every day!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Mint Chocolate Chip with REAL mint specifically called out (service=2). Owners' backstory adds depth.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_061",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 4,
+      "word_count": 19,
+      "text": "Shhhhh so good Also what is up with the slight saltiness of the chocolate chip cookie, it kills me",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Chocolate chip cookie with salty observation (service=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_062",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 4,
+      "word_count": 32,
+      "text": "Splurged after dinner for the macaroons box - While pricey ($15), the morsels were just about perfect. Also got a peanut cookie sandwich - hubby devoured it! Wish I had bought more!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Macaron box ($15), peanut cookie sandwich (service=2). After-dinner splurge (occasion=1).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_063",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 5,
+      "word_count": 42,
+      "text": "Went for the first time with friend! We loved it! Sebastian helped us and was such a plus to the experience! Great attitudes but the whole team. Definitely a great date spot or place to bring the kids. Going back for sure.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Date spot + bring-kids = specific occasions (2). But no specific service named. Sebastian-by-name as attribute (1). Bucket 2 by depth>=1 (occasion specifics give some depth).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_064",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 2,
+      "word_count": 22,
+      "text": "The macaroon is way worse than I expected from a famous bakery. I hope the restaurant is a lot better than this...",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Macaron named (service=2). Outcome=1 (disappointed).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_065",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 5,
+      "word_count": 26,
+      "text": "What a cupcake and fun of buying it out of an ATM. The cupcakes where Delicious and moist. I highly recommend a stop at the ATM.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Cupcake generic (1). Cupcake ATM = distinctive operational attribute, plus the buying experience (attributes=2). Bucket 1 via attributes>=2.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_066",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 1,
+      "word_count": 65,
+      "text": "My family and I made a quick stop. Staff was very friendly, but the pastries were bad! I spent $80! $80! I got boxes of pastries. I was expecting something delicious and all I got were stale and HARD lobster tails, and cannolis that tasted like stale toaster strudel, the raspberry cookies tasted like any other raspberry cookie. Nothing tasted like it was freshly made.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Lobster tails, cannolis, raspberry cookies (service=2). $80 price detail. Stale/hard descriptors (depth=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_067",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 5,
+      "word_count": 20,
+      "text": "This place was great ! Service was excellent and so was my Madagascar vanilla topped with strawberries . Loved it!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Madagascar vanilla with strawberries named (service=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_068",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 3,
+      "word_count": 260,
+      "text": "I could have just read my food twin, Jessica M.'s review, and known better. But did I? NOPE! Fail, major one. I have had two Sprinkles experiences. First, my wonderful boyfriend surprised me at work one day with mini cupcakes and fresh cookies. Like almost still warm, so fresh. The cookies were amazingly good. For sure one of the best I have had. But wait, I thought Sprinkles was a cupcake place? My coworker and I split the minis and they were decent. But did not compare to the cookies. My second experience was after a super cool Yelp event. A few of us decided to try this place for a sweet spot. I got a cupcake, some ice cream, and a few cookies togo. The ice cream, nasty. DID NOT LIKE AT ALL. The regular size cupcake. Eh. It was ok, but not worth the price or the fame. I actually enjoyed the minis more. The cookies the second time around, also eh. They were not as fresh and didn't live up to the previous enjoyment I once had. Is Sprinkles a way cool addition to the Linq area and the wheel? YES. Will it bring in a shit ton of money? HELL YES. Will I return? Proabaly not when there are quite a few mom and pop bakeries with better prices off the strip. This place is great for some, just not for locals. If you are a tourist, go get yourself a $5 cupcake out of the cupcake ATM. That's the cool part, not the actual product.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Mini cupcakes, regular cupcakes, ice cream, cookies, $5 ATM cupcake (service=2). Linq location, ATM, tourist-vs-local distinction, vs mom-pop bakery comparison (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_069",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 4,
+      "word_count": 83,
+      "text": "On our way home from house warming party in North Scottsdale, I remembered I had a coupon for buy one get one free for Sweet Republic. This was my first visit at Sweet Republic and after tons of great reviews, my expectations were set and they were met. We both had the apple pie and Real Mint Chip. This is unlike any other ice cream I have ever had, it was delectable. I am happy I got to try this place. Thanks Yelp!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Apple pie + Real Mint Chip flavors (service=2). BOGO coupon = operational attribute. After-housewarming occasion.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_070",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 23,
+      "text": "Cutest ice cream place! Came for the first tonight and definitely will reccomend and be back! Owner is super nice as well :)",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "First-time visit weak occasion (1). Otherwise generic. Bucket 3.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_071",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 1,
+      "word_count": 583,
+      "text": "I was there at the grand opening at 9. got there around 8:00am and was one of the first 25 people . They had UNLV cheerleaders to cheer and had a great opening. The bread was nice and fresh. Respect for the managers to have crowd control and not let it look like a Hong Kong protest inside with people grabbing bread off the trays before they hit the shelf. They handled that pretty well. I got everything I could on my tray. two mugs and the yardstick for the first 100 customers. The above review is 5 stars worthy for the morning. the reason why I put a one star is for people who are curious and for the managers to look at how they did cause they care about the business and need customer feedback. I went back there at night because I gave most of the bread pastries away to my coworkers since we had a birthday celebration. I did not have a chance to try the matcha custard bread, milk pudding bun, the croquette bun. etc. I went back hoping there was still more at night. instead it was mostly subpar items like muffins and the egg tarts. None of the premium items I saw in the morning or mentioned above or the ones you see in the morning review posts. It was just pumping out the same bread and put it in three different places. I saw the berry tart like in three different shelves and muffins that anyone can go get at Starbucks. It was just selling bread at that point for profit since there was a demand there, but also because they probably ran out of ingredients for the other items. Here is the reason where they screwed up. Since the morning. it was pretty chaotic with all the excitement. I forgot to ask if the free yardstick was refillable or not. I heard the regional divisional manager say this is the first of its kind for Las Vegas since it has Vegas themes on the free items. I could not hear if he said \"free\" refills or \" no refills for the yardstick. I went back at night to ask and clarify. I asked three employees and they did not know. Till I asked the lady at the drink section kindly if it was free refill or not. The cashier next to her heard me and said in an angry tone. NO REFILL. then mumbled to her coworker \" they brought it up in the meeting.\" the one I asked kindly went to her manager and asked and she came back and told me no without yelling No REFILL like the other cashier did. I accepted it since i wasnt sure due to all the noise in the morning. The one star is for the rude cashier at the front. All it takes is one thing to ruin the whole experience. the customers are the driving force for the business, but if they have cashiers not able to handle the customers, then people reading should be aware to expect it. Bread was perfect, grand opening was perfect. Ask a question and get an angry response from another employee and I am willing to spend the time to write this one star review. Do yourself a favor. Dont go there at night and grab the leftover inventory. Wait till the hype goes down and they train their employees to be nice and courteous to the customers.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Matcha custard bread, milk pudding bun, croquette bun, egg tarts, berry tart, muffins (service=2). Grand opening, yardstick, refill policy, cashier behavior (attributes=2). Grand opening + birthday celebration occasions.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_072",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 5,
+      "word_count": 90,
+      "text": "Aside from the small space and limited parking in the front of the store, Churn is an excellent place to get delicious ice cream on a hot day in Arizona, or even not as hot day. The more typical flavors at excellent at Churn but the reason I keep going back is for their Vietnamese coffee ice cream. The texture is always creamy and Vietnamese coffee flavor is intense and strong, making it a perfect desert for a coffee lover, like me. What I recommend: -- Vietnamese coffee ice cream",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Vietnamese coffee ice cream specifically named (service=2). Small space, limited parking = operational attributes (2). Hot day Arizona occasion (1).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_073",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 4,
+      "word_count": 92,
+      "text": "What a fun ice cream place! But be warned: this place gets SUPER BUSY on a weekend evening, so be prepared to stand in line for a very long time. We probably waited in line for over half and hour. But they have a very wide selection of unique flavors, and the quality of the ice cream itself is quite good. There is minimal seating inside, and only a little outside. But there's a wide open \"courtyard\" right next to it so standing around or on some steps is a good option.",
+      "labels": {
+        "service": 0,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "No specific flavor named, but lots of operational attributes: weekend busy, 30+ min line, minimal indoor seating, courtyard nearby (=2). Bucket 1 via attributes>=2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_074",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 5,
+      "word_count": 49,
+      "text": "Greeted when entering the shop in a very friendly way and it was packed with customers! Really cute and clean! A $1.50 for an above average glazed donut is awesome! $1.50 for a SHARABLE glazed donut is even more awesome! Will be back the next time we're in town!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Glazed donut at $1.50, sharable size (service=2). $1.50 price + packed + cute/clean (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_075",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 5,
+      "word_count": 34,
+      "text": "The best milk chocolate covered strawberries I have ever eaten!! Chocolate was semi-sweet and creamy. Strawberries were extremely fresh and juicy. Couldn't have asked for anything better to end the night. Thank you Buddy!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Milk chocolate covered strawberries with semi-sweet chocolate (service=2). End-of-night occasion (1).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_076",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 3,
+      "word_count": 232,
+      "text": "Promised my daughter I would take her here to try the nutella donut she has been dying to sink her teeth into. Came in on a Saturday morning around 11am to find a small line of about 5 people formed waiting to place their orders. Donuts are priced individually. Picked up two nutella overloads, one strawberry cheesecake and one toasted coconut; total came to $13. Nutella Overload: Nothing to call home about. In my opinion, there was no 'overload' of nutella present. This donut is basically a nutella-filled donut with powdered sugar dusted heavily on top. Strawberry Cheesecake: This is a jelly filled donut (I believe strawberry jelly - hence the strawberry in the name), with a glazed topping and a dusting pile of what I believe is graham crackers. I don't get any cheesecake from this donut, so I don't know why they find the need to call it a strawberry cheesecake donut. Toasted Coconut: An old fashion cake donut with toasted coconut on top. If you like coconut, you will enjoy the coconut topping. Overall, these donut were not terrible but they were not donuts that I 'gotta have' next time in Vegas. Side note - there is metered parking right in front of the business which only takes credit cards. Best bet, have someone drop you off and circle around and pick you up to save money on parking!",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Nutella Overload, Strawberry Cheesecake, Toasted Coconut donuts, $13 total (service=2). Saturday 11am line, individual pricing, metered parking credit-card-only (attributes=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_077",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 5,
+      "word_count": 165,
+      "text": "Since I visited both Bouchon Restaurant and Bouchon Bakery in Yountville, I was hooked. Once I learned they had shop in Vegas, I knew I had to stop in there during my last visit to Sin City. Before checking out of the Palazzo, I headed over to the Venetian to order some goodies from Bouchon Bakery. The line was wrapping around their little bakery station in the corner of the casino. I had a hard time deciding what I wanted to order just by looking at their display of goodies behind the glass cases. Finally, I decided on the following: a turkey and brie sandwich, a carrot cake cookie, a cheese danish, chocolate croissant and a small coffee. Yes, all of where were for just myself! I'm a glutton =) My boyfriend had already left and took an earlier flight home so I was able to spoil myself with these yummy treats. Everything was deeeeelish! I would definitely be returning for more sugary carby heaven.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Turkey-brie sandwich, carrot cake cookie, cheese danish, chocolate croissant, coffee (service=2). Long line in casino (1). Vegas trip occasion (1).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_078",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 5,
+      "word_count": 25,
+      "text": "My favorite bakery in little Italy! My favorites are the tiramisu, cream puff, and cheesecake, but pretty much everything in the dessert section is good",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Tiramisu, cream puff, cheesecake named (service=2). Little Italy location detail.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_079",
+      "source": "yelp",
+      "business": "churn_phx",
+      "rating": 5,
+      "word_count": 38,
+      "text": "One of the best ice cream I have ever had! Tastes like childhood. Their flavors are fancy but not to a point when they taste wierd. I absolutely love their sweat cream ice cream and honey whipped cream!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Sweet cream ice cream + honey whipped cream named (service=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_080",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 5,
+      "word_count": 45,
+      "text": "So happy to have ran into this location while visiting Vegas. We have this bakery back home in San Diego so I was so glad to have found one . I called my order ahead of time and picked it up the same day .",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Call-ahead-pickup as operational attribute (1). No specific service. Vegas visit + San Diego comparison (occasion=1). Bucket 2 by depth>=1.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_081",
+      "source": "yelp",
+      "business": "sprinkles_lv",
+      "rating": 4,
+      "word_count": 48,
+      "text": "Great service, so many choices. Even a doggy cup cake. My only wish is a gluten free cup cake option and more then one non dairy sorbet. Either way my husband loved his red velvet cup cake with captain crunch ice cream and my strawberry sorbet was Delish.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Doggy cupcake, red velvet cupcake with captain crunch ice cream, strawberry sorbet (service=2). Gluten-free wish, non-dairy sorbet wish = operational dietary attributes (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_082",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 25,
+      "text": "Best Ice cream in town! Great service and even better ice cream. Do yourself a favor and order the dough melt you won't regret it!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Dough melt named (service=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_083",
+      "source": "yelp",
+      "business": "novel_icecream_phx",
+      "rating": 5,
+      "word_count": 58,
+      "text": "The experience I've ever had. I have craved this everyday since I went for the first time last week. I had butter pecan inside of a donut with cereal topping. My husband had the waffle & everything was really delicious. They took the time to take care of customers one at a time not feeling rushed. Wonderful experience.",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Butter pecan in donut with cereal topping (service=2). One-customer-at-a-time pace = attribute (1).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_084",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 5,
+      "word_count": 18,
+      "text": "The cake was killer and we loved celebrating my birthday with Alice's if the sweet delicious rainbow cake!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Rainbow cake (service=2). Birthday celebration (occasion=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_085",
+      "source": "yelp",
+      "business": "85c_bakery_cafe_lv",
+      "rating": 3,
+      "word_count": 35,
+      "text": "Today, I came to try this bakery for the first time. The bread is good. The drinks are not good. The service is average. I will go back to buy his bread. The drinks won't",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Bread vs drinks split is informative but neither named specifically (service=1). First-time visit (occasion=1). Will-return-for-bread-not-drinks (outcome=1). depth=1. Bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_086",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 5,
+      "word_count": 48,
+      "text": "I have been going to Prestis for many years. Love the breakfast food, lunch is spectacular and the bakery is out of this world. I try to get there at least once a week. The staff is always friendly and working very hard to get you served quickly.",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Breakfast/lunch/bakery generic (1). Quick-service attribute (1). depth=1 for once-a-week regularity. Bucket 2 by depth>=1.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_087",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 5,
+      "word_count": 20,
+      "text": "Really awesome ice cream. Featured on Food Network but worth the press. We will definitely be back to try more.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "low",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Food Network feature = mild attribute (1). Otherwise generic. Bucket 3.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_088",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 4,
+      "word_count": 70,
+      "text": "I only had their macaroons. I tried their pistachio, mint chocolate chip, and vanilla. All three were perfect! Each bite was airy crisp on the outside, sweetly flavored, and with slightly gooey thin layers inside. I brought back the chocolate and raspberry macaroons as gifts. I wished I had the space to fit in a chocolate, fruit, and lime tart, but I can only eat so much in one day.",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Pistachio, mint chocolate chip, vanilla, chocolate, raspberry macarons + chocolate-fruit-lime tart (service=2). Texture description (depth=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_089",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 5,
+      "word_count": 79,
+      "text": "OMG! What a great spread of flavors! My friends and I stopped here after a birthday dinner in the area. Everyone else had been here already except a few of us. The unanimous decision was: GOOEY BUTTER CAKE ICE CREAM So flavorful. It has a caramel type flavor with pieces of cake inside. I paired this with the Brandied Banana BrÃ»lÃ©e for the other half scoop. What a great match! I will definitely be back for a cool treat!",
+      "labels": {
+        "service": 2,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Gooey Butter Cake ice cream + Brandied Banana Brûlée (service=2). After-birthday-dinner occasion (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_090",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 5,
+      "word_count": 20,
+      "text": "Cute shop with amazing donuts! Great tasting Mochas and friendly staff. We'll be back again when we visit Las Vegas.",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Donuts/Mochas generic (1). Cute/friendly generic (1). depth=0. Falls to bucket 3.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_091",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 4,
+      "word_count": 170,
+      "text": "Oh Bouchon, you've made me an addict. I trekked to your enclave under the escalator in the Venetian three times in a 24 hour period and spent $20 on your crack-like goodies. I was dismayed that you didn't offer the almond croissants that your Yountville sister has in abundance, but your kind worker comforted me with a strawberry croissant with a light taste of almond paste. Too bad my buzz from Fat Tuesday prevented me from tasting it properly. But alas, it was this buzz that helped me shell out $4 for almost every baked goody I ordered. The macarons were heavenly, and much bigger than those in Yountville. I fell in love with your $3.25 goodness. The chocolate chip cookie was a tad brittle, but the buttery fluffiness of the croissant and pain au raisin helped numb the pain in my teeth. If only your prices were a tad lower (why is it cheaper in Yountville of all places?), I would love you forever. Bouchon does wonders with butter.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Strawberry croissant with almond paste, macarons, chocolate chip cookie, croissant, pain au raisin (service=2). $20 total, $3.25/$4 prices, no almond croissants vs Yountville (attributes=2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_092",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 3,
+      "word_count": 90,
+      "text": "Presti's can be really hit or miss. It's definitely the most popular bakery in little Italy but it's a little overpriced and I haven't enjoyed all of the bakery items I've tried. I would definitely suggest sticking to the cassata cake, cannolis or their assortment of Italian cookies, which seem to be pretty consistent in quality. They do have a wide range of food items including baked sweets, gelato, hot drinks and hot prepared food and they are a convenient dessert stop if you are grabbing dinner in little Italy.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Cassata cake, cannolis, Italian cookies (service=2). Overpriced, hit-or-miss, gelato + hot drinks + hot food = operational range (2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_093",
+      "source": "yelp",
+      "business": "jenis_icecream_clt",
+      "rating": 5,
+      "word_count": 92,
+      "text": "Super excited to try this place out! Their ice creams look great! So excited for this location. I'll update my review after they open to the public Update: 7-30-18 I came here over the weekend with my fiancÃ©. We really enjoyed the goat cheese and cherry. Our only issue was the the stools are too short for the outside bar. Makes for a really uncomfortable sitting experience. I can't wait to try some more flavors. It is also in a great location. But don't forget about the old timey Pikes Soda Shop!",
+      "labels": {
+        "service": 2,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 1,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Goat cheese and cherry flavor (service=2). Short stools at outside bar = specific operational attribute (1). Weekend with fiancé occasion (1).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_094",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 3,
+      "word_count": 483,
+      "text": "When it comes to bakeries, Presti's is one of the best, in my opinion. They have amazing pastries, cookies, and their entire food case is pure deliciousness. They were a natural choice when I was asked by a very dear friend to bring pastries to the memorial dinner for her father, which happened to be in the neighborhood. In full disclosure, the 25 pc small pastry tray and 3 lb cookie tray I ordered were a thing of beauty, and they were very much appreciated by the family in such a sad time. Ultimately, that was my goal, and I was grateful to Presti's for delivering. My criticism has to do with the folks working at the counter. When I arrived, there were several people milling around, but I didn't see a discernible line. Since I had a timed pick up (1:00, but it was 12:45 - I told them my circumstances in advance, knowing it may be a few minutes either way), and I was prepaid, I asked a counter employee where I should go to pick up my order. Mind you, I have been in better places in my life, seeing that we literally had just left Lakeview Cemetery under extremely sad circumstances, I was frozen to the bone, I had cried so many tears, and I was illegally parked. The woman who responded literally scolded me for not taking a number, like I was a child. It is rare to read such disdain from a stranger, but I got that from her. Just for asking a question. Ok...so I took a number. And I waited. And waited. There were no less than 4 people behind the counter, and a customer would come for an order every now and again. They all ignored me until my number was called. When I told the man behind the counter that I had a prepaid order under my name, I got the feeling that he couldn't be bothered. I got a \"they're still working on it.\" Ok...minutes passed, and workers bustled to and fro. At this point, I'm starting to panic, since everyone from the cemetery had already been at the meal for awhile. Finally, a pleasant young woman asked me if I had been helped, and I told her what I was waiting for. She told me she would check on the status, and several minutes later, another woman brought out a lovely platter of small cheese cakes, etc. I don't know what the story was, but the \"can't be bothered\" hipster vibe I got from this pickup was the last thing I expected from a Cleveland institution. I am very aware that we get what we give, and I strive to treat the people I interact with kindness. While I arrived with a sad heart, I didn't deserve the coarseness I initially received. For that reason, I'll probably think twice next time.",
+      "labels": {
+        "service": 2,
+        "attributes": 2,
+        "outcome": 1,
+        "occasion": 2,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "25-pc pastry tray, 3-lb cookie tray, prepaid pickup (service=2). Number-system, timed pickup, multiple counter workers (attributes=2). Memorial dinner pickup occasion (2).",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_095",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 5,
+      "word_count": 25,
+      "text": "Was looking for something refreshing for a nightcap on a hot Scottsdale night. You will not be disappointed. The sorbet was really tasty and refreshing.",
+      "labels": {
+        "service": 1,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 2,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Sorbet generic (1). Hot-Scottsdale-night nightcap = specific occasion (2). depth=1 from occasion specificity. Bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_096",
+      "source": "yelp",
+      "business": "donut_bar_lv",
+      "rating": 5,
+      "word_count": 23,
+      "text": "Thank you yelp for helping me find this gem! Every donut was delicious!! Best I've ever had! Please open one in San Francisco!",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Pure generic praise.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_097",
+      "source": "yelp",
+      "business": "sweet_republic_sct",
+      "rating": 5,
+      "word_count": 58,
+      "text": "The Sweet Republic is an outstanding place to get a delicious treat in Arizona. Their ice cream is delicious and also they offer a lot of different flavors. They should offer more options for sorbet for as alternative option for people that are lactose intolerant. Overall this is a outstanding place to hangout with their friends and family!",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Sorbet/ice cream generic (1). Lactose-intolerant accommodation gap = operational attribute (1). depth=1. Bucket 2.",
+      "split": "test"
+    },
+    {
+      "review_id": "r_098",
+      "source": "yelp",
+      "business": "prestis_bakery_clv",
+      "rating": 3,
+      "word_count": 55,
+      "text": "Food fairly good for Italian bakery. My taste buds may be spoiled by the tastes from Boston, New York, and Italy though. Large variety of pastries and gelatos, also have some hot foods. Good amount of seating but bit loud to really have easy conversation. Service fast and efficient. They should wear hair nets though.",
+      "labels": {
+        "service": 1,
+        "attributes": 2,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 2
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "service_attribute_matchable",
+      "labeler_notes": "Pastries/gelatos generic (1). Loud-for-conversation, fast-efficient-service, no-hair-nets, seating amount (attributes=2).",
+      "split": "test"
+    },
+    {
+      "review_id": "r_099",
+      "source": "yelp",
+      "business": "carlos_bakery_lv",
+      "rating": 1,
+      "word_count": 18,
+      "text": "Extremely disappointed. Ordered three cakes and trashed two. I could get better quality dessert from any grocery store.",
+      "labels": {
+        "service": 1,
+        "attributes": 0,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Cakes generic (1). Trashed-two-of-three (outcome=1). Grocery-store comparison adds depth (1). Bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "r_100",
+      "source": "yelp",
+      "business": "bouchon_bakery_lv",
+      "rating": 2,
+      "word_count": 17,
+      "text": "Went early and hoping for freshly baked pastries however the pastries were cold and tasted day old.",
+      "labels": {
+        "service": 1,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 1,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Pastries generic (1). Cold/day-old as attribute (1). Day-old outcome (1). Early-visit occasion (1). depth=1. Bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_001",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Great place, really enjoyed it.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Pure generic praise.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_002",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Good service overall, no complaints.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic, no anchor.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_003",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 6,
+      "text": "Everything was nice, would come again.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_004",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Had a good experience here.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_005",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Staff was friendly and helpful.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Friendly/helpful as generic attribute (1). depth=0. Bucket 3 since attributes=1 only.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_006",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Pretty decent place, liked it.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_007",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 7,
+      "text": "Nothing bad to say, it was good.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_008",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 6,
+      "text": "I had a nice time here.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_009",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 4,
+      "text": "Overall a good experience.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_010",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Would definitely recommend this place.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_011",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Very satisfied with my visit.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_012",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 6,
+      "text": "It was okay, met my expectations.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_013",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Good quality and good service.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_014",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Nice atmosphere and nice people.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Atmosphere mentioned but unspecified (1). Bucket 3.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_015",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 3,
+      "text": "Everything went smoothly.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_016",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 4,
+      "text": "Had a pleasant experience.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_017",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "This place is worth trying.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_018",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "I really liked it here.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_019",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Great overall, will be back.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_020",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 5,
+      "text": "Happy with the service provided.",
+      "labels": {
+        "service": 0,
+        "attributes": 0,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "Generic.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_021",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 26,
+      "text": "The staff was very welcoming from the moment I walked in, and the whole experience felt smooth and well-organized. I didn't feel rushed at any point.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "high",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Welcoming staff, smooth/organized, not rushed = trust attributes (1, generic). depth=1 for the not-rushed specificity. No service named. Bucket 2.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_022",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 20,
+      "text": "I appreciated how polite and attentive everyone was during my visit. The environment felt comfortable, and everything seemed handled professionally.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Polite/attentive/professional/comfortable = generic trust language (1). depth=0 — no concrete reasoning behind these claims. Borderline bucket 2 vs 3; settled bucket 2 because trust language is the explicit signal type for that bucket.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_023",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 24,
+      "text": "Overall, a really positive experience. The team made sure I was taken care of, and I left feeling satisfied with how everything was handled.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust language. Outcome=1 (left satisfied).",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_024",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 25,
+      "text": "The place had a nice vibe and the staff were easy to talk to. It felt like they genuinely cared about making the experience pleasant.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Genuine-care framing adds slight depth (1). Otherwise generic trust language.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_025",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 27,
+      "text": "I didn't know what to expect at first, but everything turned out to be pretty good. The staff explained things clearly and made me feel at ease.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Initial-uncertainty arc gives depth (1). Outcome=1 (turned out good). Generic trust attribute.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_026",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 22,
+      "text": "Everyone I interacted with was courteous and helpful. The process was straightforward, and I didn't run into any issues during my visit.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust. No issues = no outcome to label.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_027",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 21,
+      "text": "The experience was smooth from start to finish. I liked how organized everything was and how comfortable the environment felt overall.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust language.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_028",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 18,
+      "text": "It was a solid experience. The team seemed experienced and handled things efficiently without making it feel rushed.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Experienced + not-rushed gives slight depth (1). Generic trust attribute.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_029",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 18,
+      "text": "I liked how clean and well-maintained the place was. The staff were friendly, and everything felt professionally managed.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Clean/well-maintained more concrete than other u_xxx reviews but still generic. depth=0 borderline; sticking 0 since no examples given.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_030",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 18,
+      "text": "The overall experience was good. The staff communicated clearly and made sure I understood everything along the way.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust language. 'Communicated clearly' is the explanation-vibe that fits service businesses more than bakeries.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_031",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 21,
+      "text": "I felt comfortable throughout my visit, which is something I really value. The team was respectful and attentive the entire time.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_032",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 18,
+      "text": "The service was consistent and reliable. Nothing stood out as extraordinary, but everything was handled well and professionally.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Consistent/reliable framing gives slight depth (1). Generic attribute.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_033",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 20,
+      "text": "I had a good experience here. The staff were approachable, and the overall process felt smooth and easy to follow.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_034",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 21,
+      "text": "The environment was calm and welcoming, which made the visit more enjoyable. The staff were supportive and easy to interact with.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_035",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 21,
+      "text": "Everything was handled efficiently, and I didn't have to wait long. The staff seemed well-coordinated and knew what they were doing.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Wait time mentioned (no specific duration). depth=1 from coordination framing. Generic attribute.",
+      "split": "test"
+    },
+    {
+      "review_id": "u_036",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 22,
+      "text": "The visit went better than I expected. The team made an effort to make me feel comfortable and answered my questions patiently.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 1,
+        "occasion": 0,
+        "descriptive_depth": 1
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "trust_quality_matchable",
+      "labeler_notes": "Better-than-expected outcome (1). Patient-with-questions slight depth (1). Generic attribute.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_037",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 18,
+      "text": "It was a pleasant experience overall. The staff were respectful, and the place had a nice, relaxed atmosphere.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust + atmosphere mention.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_038",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 19,
+      "text": "I liked how straightforward everything was. There were no complications, and the team made sure the process stayed smooth.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic process-language — fits service businesses (medical, salon) more than bakeries. Generic attribute.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_039",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 17,
+      "text": "The staff were professional and easy to deal with. The experience felt well-managed from beginning to end.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust language.",
+      "split": "dev"
+    },
+    {
+      "review_id": "u_040",
+      "source": "user_contributed_LLM_generated",
+      "business": "n/a",
+      "rating": null,
+      "word_count": 21,
+      "text": "Overall, a dependable experience. Everything was handled in a calm and organized way, which made it easy to trust the process.",
+      "labels": {
+        "service": 0,
+        "attributes": 1,
+        "outcome": 0,
+        "occasion": 0,
+        "descriptive_depth": 0
+      },
+      "relevance": true,
+      "confidence": "medium",
+      "expected_bucket": "low_retrievability",
+      "labeler_notes": "[v3 strict-rule reclassification] Generic trust language.",
+      "split": "dev"
+    }
+  ],
+  "corpus_summary": {
+    "total_reviews": 140,
+    "by_source": {
+      "yelp": 100,
+      "user_contributed_LLM_generated": 40
+    },
+    "by_bucket_overall": {
+      "trust_quality_matchable": 22,
+      "low_retrievability": 50,
+      "service_attribute_matchable": 68
+    },
+    "ai_visibility_pct_overall": 64.3,
+    "by_bucket_yelp_only": {
+      "trust_quality_matchable": 15,
+      "low_retrievability": 17,
+      "service_attribute_matchable": 68
+    },
+    "ai_visibility_pct_yelp_only": 83.0,
+    "confidence_distribution": {
+      "medium": 42,
+      "low": 8,
+      "high": 90
+    },
+    "dimension_coverage_pct": {
+      "service": 57.1,
+      "attributes": 65.7,
+      "outcome": 16.4,
+      "occasion": 30.0,
+      "descriptive_depth": 61.4
+    },
+    "dimension_specific_pct": {
+      "service": 40.7,
+      "attributes": 24.3,
+      "outcome": 0.0,
+      "occasion": 10.7,
+      "descriptive_depth": 30.0
+    },
+    "by_business_yelp": {
+      "amelies_clt": {
+        "trust_quality_matchable": 4,
+        "low_retrievability": 9,
+        "service_attribute_matchable": 27
+      },
+      "novel_icecream_phx": {
+        "service_attribute_matchable": 4,
+        "low_retrievability": 2
+      },
+      "donut_bar_lv": {
+        "service_attribute_matchable": 4,
+        "low_retrievability": 2
+      },
+      "sprinkles_lv": {
+        "service_attribute_matchable": 5,
+        "low_retrievability": 1
+      },
+      "85c_bakery_cafe_lv": {
+        "trust_quality_matchable": 4,
+        "low_retrievability": 1,
+        "service_attribute_matchable": 1
+      },
+      "jenis_icecream_clt": {
+        "service_attribute_matchable": 5,
+        "low_retrievability": 1
+      },
+      "carlos_bakery_lv": {
+        "service_attribute_matchable": 4,
+        "trust_quality_matchable": 2
+      },
+      "churn_phx": {
+        "service_attribute_matchable": 5,
+        "trust_quality_matchable": 1
+      },
+      "sweet_republic_sct": {
+        "service_attribute_matchable": 3,
+        "low_retrievability": 1,
+        "trust_quality_matchable": 2
+      },
+      "prestis_bakery_clv": {
+        "service_attribute_matchable": 5,
+        "trust_quality_matchable": 1
+      },
+      "bouchon_bakery_lv": {
+        "service_attribute_matchable": 5,
+        "trust_quality_matchable": 1
+      }
+    },
+    "important_caveats": [
+      "Single-labeler synthetic gold. Same model that will be evaluated produced these labels — agreement metrics will be optimistically biased.",
+      "AI-visibility 87.1% (yelp-only) is still inflated. The dataset is dessert/bakery-skewed where customers tend to write descriptively about specific items. A typical small business with shorter, more generic reviews will land lower.",
+      "The 40 user-contributed reviews are LLM-generated. The 20 medium ones describe a generic polite service interaction — most have attributes=1, depth=0 and fall to low_retrievability under the locked rule. This is an honest finding: trust language without specifics is not retrievable.",
+      "The locked classification rule was applied strictly. 13 reviews initially placed in bucket 2 by intuition were moved to bucket 3 to enforce consistency. This made the corpus distribution more honest but reveals that \"trust/quality-matchable\" is a narrow bucket — it requires both an attribute mention AND descriptive depth.",
+      "Confidence is calibrated to per-review labelability. Low-confidence labels (~10% of corpus) are where rubric ambiguity is concentrated — these are the disagreements to expect when comparing against an LLM labeler."
+    ],
+    "split_strategy": "Stratified 70/30 dev/test split by (source × expected_bucket). Random seed 2026, deterministic. Use dev for prompt iteration; evaluate ONLY on test for final agreement metrics.",
+    "split_counts": {
+      "dev": 98,
+      "test": 42
+    },
+    "split_buckets_dev": {
+      "trust_quality_matchable": 15,
+      "service_attribute_matchable": 48,
+      "low_retrievability": 35
+    },
+    "split_buckets_test": {
+      "trust_quality_matchable": 7,
+      "low_retrievability": 15,
+      "service_attribute_matchable": 20
+    }
+  },
+  "business_profiles": {
+    "amelies_clt": {
+      "type": "French bakery and café",
+      "inferred_services": [
+        "pastries",
+        "macarons",
+        "croissants",
+        "breads",
+        "salted caramel brownies",
+        "tarts",
+        "cakes",
+        "coffee",
+        "breakfast sandwiches",
+        "soups",
+        "tea"
+      ],
+      "inferred_attributes": [
+        "24-hour operation",
+        "French/Parisian eclectic decor",
+        "abundant seating",
+        "study-friendly nooks",
+        "popular with college students",
+        "long lines on weekends",
+        "wifi available"
+      ],
+      "inferred_customer_contexts": [
+        "study sessions",
+        "late-night/post-bar visits",
+        "casual dates",
+        "tourist visits",
+        "business meetings",
+        "family outings",
+        "solo readers"
+      ]
+    },
+    "bouchon_bakery_lv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "carlos_bakery_lv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "donut_bar_lv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "sprinkles_lv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "prestis_bakery_clv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "85c_bakery_cafe_lv": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "churn_phx": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "novel_icecream_phx": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "jenis_icecream_clt": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    },
+    "sweet_republic_sct": {
+      "type": "bakery / café / dessert (specific business profile not curated; infer from reviews at runtime)",
+      "note": "v3 fixture only includes 6 reviews per business — too few to curate a stable profile. The pipeline's business-profile inference step should run over all reviews from a real corpus."
+    }
+  }
+}
