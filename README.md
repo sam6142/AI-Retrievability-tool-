@@ -5,7 +5,7 @@ A diagnostic tool that takes a business's existing customer reviews and reports 
 The tool measures **retrievability**, not quality. A 5-star "great place!" review is low-retrievability. A 2-star review describing a specific bad experience is high-retrievability. The verdict is independent of sentiment.
 
 **Phase:** Prototype. CLI-only. Single vertical (bakery / café / dessert).
-
+**Live demo:** [Sample report on Milk Bar (Las Vegas)](https://sam6142.github.io/AI-Retrievability-tool-/demo/report.html)
 ---
 
 ## Quick start
