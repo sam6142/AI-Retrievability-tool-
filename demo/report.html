@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review Retrievability Report &#x2014; Dessert shop specializing in innovative ice cream and baked goods</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #000000;
+  color: #eeeeee;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 28px;
+}
+header { padding-bottom: 32px; border-bottom: 1px solid #333333; }
+h1 { color: #FFE600; font-size: 1.6rem; font-weight: 700; letter-spacing: .03em; margin-bottom: 10px; }
+h2 { color: #FFE600; font-size: .9rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 18px; }
+h3 { color: #eeeeee; font-size: .9rem; font-weight: 600; margin: 18px 0 8px; }
+section { border-top: 1px solid #333333; padding: 36px 0; }
+p { margin-bottom: 14px; }
+p:last-child { margin-bottom: 0; }
+strong { color: #eeeeee; }
+.yellow { color: #FFE600; font-weight: 700; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 13px; color: #999999; }
+.meta strong { color: #eeeeee; }
+.headline-pct {
+  font-size: clamp(4rem, 12vw, 7rem);
+  font-weight: 700;
+  color: #FFE600;
+  line-height: 1;
+  margin: 20px 0 6px;
+}
+.headline-label { font-size: 1rem; margin-bottom: 24px; }
+.bucket-counts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.bucket-count { font-size: .95rem; }
+.bucket-count .count { color: #FFE600; font-weight: 700; display: inline-block; min-width: 2.5em; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 14px; font-size: 13px; }
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; display: inline-block; }
+ul { list-style: none; padding: 0; margin-bottom: 12px; }
+ul li { padding-left: 18px; position: relative; margin-bottom: 4px; }
+ul li::before { content: "\2022"; color: #FFE600; position: absolute; left: 0; }
+.profile-confidence { color: #FFE600; font-weight: 700; }
+.note { border-left: 2px solid #FFE600; padding: 8px 14px; color: #bbbbbb; font-size: .9rem; margin: 16px 0; }
+.example { margin-bottom: 28px; }
+.example-bucket {
+  color: #FFE600;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.example-card { border: 1px solid #333333; padding: 14px 16px; margin-bottom: 10px; }
+.example-id { font-size: .78rem; color: #888888; margin-bottom: 6px; }
+.example-text { font-size: .95rem; font-style: italic; margin-bottom: 10px; }
+.example-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.label-chip { font-size: .72rem; padding: 2px 7px; background: #111111; border: 1px solid #333333; color: #666666; }
+.label-chip.active { border-color: #FFE600; color: #FFE600; }
+.example-rationale { font-size: .78rem; color: #777777; line-height: 1.5; }
+.example-rationale strong { color: #999999; }
+footer { border-top: 1px solid #333333; padding-top: 28px; font-size: .85rem; color: #666666; }
+.footer-fixed { margin-top: 10px; font-style: italic; color: #555555; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Review Retrievability Report</h1>
+  <div class="meta">
+    <span>Business: <strong>Dessert shop specializing in innovative ice cream and baked goods</strong></span>
+    <span>Reviews analyzed: <strong>100</strong></span>
+    <span>Generated: <strong>2026-04-28</strong></span>
+  </div>
+</header>
+
+<section id="headline">
+  <h2>Headline</h2>
+  
+  <div class="headline-pct">98.0%</div>
+  <div class="headline-label">Combined LLM-retrievability</div>
+  <div class="bucket-counts">
+    <div class="bucket-count"><span class="count">96</span> service/attribute-matchable</div>
+    <div class="bucket-count"><span class="count">2</span> trust/quality-matchable</div>
+    <div class="bucket-count"><span class="count">2</span> low-retrievability</div>
+  </div>
+  <p>The corpus is currently positioned to surface this business for specific-service and
+  trust-quality LLM queries on roughly 98.0% of its reviews. The remaining
+  2 reviews do not carry sufficient semantic content for LLM retrieval, though they
+  continue to function for star ratings and social proof.</p>
+</section>
+
+<p style="font-size:13px;color:#999999;margin:0 0 32px;">v1 prompt &#x2014; known calibration limitations: outcome dimension over-scores on consumption businesses (96% on this corpus vs ~16% expected). See docs/PROMPT_ITERATION.md for prompt-iteration plan.</p>
+
+<section id="distribution">
+  <h2>Bucket Distribution</h2>
+  <svg viewBox="0 0 600 52" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;display:block;border:1px solid #333333" role="img" aria-label="Bucket distribution stacked bar"><rect x="0.00" y="0" width="576.00" height="52" fill="#FFE600"/><text x="288.0" y="31" text-anchor="middle" fill="#000000" font-size="12" font-weight="600" font-family="system-ui,sans-serif">96 SAM</text><rect x="576.00" y="0" width="12.00" height="52" fill="#888888"/><rect x="588.00" y="0" width="12.00" height="52" fill="#333333"/></svg>
+  <div class="chart-legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:#FFE600"></span>Service/attribute-matchable (96)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#888888"></span>Trust/quality-matchable (2)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#333333;outline:1px solid #555555"></span>Low-retrievability (2)</div>
+  </div>
+</section>
+
+<section id="dimensions">
+  <h2>Dimension Coverage</h2>
+  <p>Percent of reviews mentioning each dimension at least generically.
+  Weakest: <span class="yellow">occasion</span></p>
+  <svg viewBox="0 0 475 174" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:475px;display:block" role="img" aria-label="Dimension coverage chart"><text x="92" y="16" text-anchor="end" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">Service</text><rect x="100" y="0" width="320" height="22" fill="#333333" rx="2"/><rect x="100" y="0" width="316.80" height="22" fill="#FFE600" rx="2"/><text x="428" y="16" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">99.0%</text><text x="92" y="54" text-anchor="end" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">Attributes</text><rect x="100" y="38" width="320" height="22" fill="#333333" rx="2"/><rect x="100" y="38" width="310.40" height="22" fill="#FFE600" rx="2"/><text x="428" y="54" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">97.0%</text><text x="92" y="92" text-anchor="end" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">Outcome</text><rect x="100" y="76" width="320" height="22" fill="#333333" rx="2"/><rect x="100" y="76" width="294.40" height="22" fill="#FFE600" rx="2"/><text x="428" y="92" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">92.0%</text><text x="92" y="130" text-anchor="end" fill="#FFE600" font-size="13" font-family="system-ui,sans-serif">Occasion ◄</text><rect x="100" y="114" width="320" height="22" fill="#333333" rx="2"/><rect x="100" y="114" width="220.80" height="22" fill="#FFE600" rx="2"/><text x="428" y="130" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">69.0%</text><text x="92" y="168" text-anchor="end" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">Depth</text><rect x="100" y="152" width="320" height="22" fill="#333333" rx="2"/><rect x="100" y="152" width="310.40" height="22" fill="#FFE600" rx="2"/><text x="428" y="168" fill="#EEEEEE" font-size="13" font-family="system-ui,sans-serif">97.0%</text></svg>
+</section>
+
+<section id="profile">
+  <h2>Business Profile</h2>
+  <p>Type: <strong>Dessert shop specializing in innovative ice cream and baked goods</strong> &#x2014;
+  Profile confidence: <span class="profile-confidence">high</span></p>
+  <h3>Services</h3>
+  <ul><li>cereal milk soft serve with cornflake crunch topping</li><li>crunchy cereal shake</li><li>birthday cake (slices and delivery)</li><li>crack pie (milk pie)</li><li>compost cookie</li><li>birthday cake truffles</li><li>cake pops</li><li>cornflake-chocolate chip-marshmallow cookie</li><li>blueberry and cream cookie</li><li>chocolate pretzel soft serve</li><li>fruity cereal milk shake with triple sec</li><li>cereal milk white russian</li><li>hot chocolate with marshmallows</li><li>drunky milkshakes</li><li>coffee drinks (hair of the dog)</li><li>bagel pops with cream cheese</li><li>build-your-own pint ice cream</li><li>gluten-free birthday cake</li><li>tasting menu</li></ul>
+  <h3>Attributes</h3>
+  <ul><li>located on second floor of The Cosmopolitan Las Vegas</li><li>frequently runs out of items</li><li>usually has a line due to popularity</li><li>limited seating area</li><li>noisy environment</li><li>high prices (soft serve $6-12, shakes $10-12, pies $27+, cookies $3 each or 3 for $8)</li><li>offers free samples before purchase</li><li>staff described as friendly and patient</li><li>fast service despite crowds</li><li>cookies individually wrapped for freshness</li><li>easy online ordering system</li><li>accepts delivery orders</li><li>illuminated signage in casino</li><li>suitable as take-out option</li></ul>
+  <h3>Customer contexts</h3>
+  <ul><li>vacation treat while visiting Las Vegas</li><li>birthday celebrations</li><li>after-dinner dessert stop</li><li>alternative to long-wait restaurants like Eggslut</li><li>morning drinks and treats</li><li>gift purchases (shipped cookies)</li><li>trying famous menu items from NYC original location</li><li>nostalgic childhood memories (cereal milk)</li></ul>
+  
+</section>
+
+<section id="examples">
+  <h2>Examples</h2>
+  <div class="example"><div class="example-bucket">Service/attribute-matchable</div><div class="example-card"><div class="example-id">[r_001] &middot; confidence: high</div><div class="example-text">&ldquo;After watching David Chang on Munchies and Buzzfeed's Worth It series, I've been hyped to try Momofuku and Milk Bar ever...&rdquo;</div><div class="example-labels"><span class="label-chip active">service=2</span><span class="label-chip active">attributes=1</span><span class="label-chip active">outcome=2</span><span class="label-chip active">occasion=2</span><span class="label-chip active">descriptive_depth=2</span></div><div class="example-rationale"><div><strong>service:</strong> Multiple specific items named: birthday cake soft serve, crack pie soft serve, cereal milk with Frosted Flakes, cookies, crack pie</div><div><strong>attributes:</strong> Generic praise ('worth the visit') but no operational specifics like pricing, hours, seating, or service speed</div><div><strong>outcome:</strong> Clear taste outcomes: overbearingly sweet on birthday cake/crack pie soft serve; positive nostalgia on cereal milk; cookies 'aren't bad'; decision to skip crack pie based on sweetness concern</div><div><strong>occasion:</strong> Vacation context ('in Vegas for vacation') plus nostalgic childhood memory trigger (cereal bowl cartoons)</div><div><strong>descriptive_depth:</strong> Sensory detail (overbearingly sweet), specific comparison (Frosted Flakes cereal bowl memory), narrative incident (scarfing down cereal), reasoning for purchase decisions (sweetness level)</div></div></div><div class="example-card"><div class="example-id">[r_002] &middot; confidence: high</div><div class="example-text">&ldquo;I've been to this location twice- once in March and once in July and both times I've had a 5 star experience. Location b...&rdquo;</div><div class="example-labels"><span class="label-chip active">service=2</span><span class="label-chip active">attributes=2</span><span class="label-chip active">outcome=2</span><span class="label-chip active">occasion=2</span><span class="label-chip active">descriptive_depth=2</span></div><div class="example-rationale"><div><strong>service:</strong> Multiple specific items named: cereal milk ice cream, 6 cookie deal, Elvis cake (peanut butter, chocolate, peanut brittle, banana)</div><div><strong>attributes:</strong> Late weekend hours, efficient staff despite lines, $6 pricing for cereal milk, $22 for 6 cookies, cookies travel well, cake keeps well in refrigerator, cookie tins available</div><div><strong>outcome:</strong> Positive repeat visits (twice), willingness to pay premium prices, successful sharing with family/friends, cake storage success</div><div><strong>occasion:</strong> Working tradeshows late, client dinners, vacation treat, bringing to hotel, sharing with family/friends</div><div><strong>descriptive_depth:</strong> Multiple concrete details: March and July visits, specific cake flavor with ingredients, price comparisons to NYC, cookie packaging quality, cake texture ('super rich'), staff efficiency observation, refrigeration performance</div></div></div><div class="example-card"><div class="example-id">[r_004] &middot; confidence: high</div><div class="example-text">&ldquo;Crack pie was amazing and everyone working there was very happy and engaged I definitely will be returning&rdquo;</div><div class="example-labels"><span class="label-chip active">service=2</span><span class="label-chip active">attributes=1</span><span class="label-chip active">outcome=1</span><span class="label-chip">occasion=0</span><span class="label-chip">descriptive_depth=0</span></div><div class="example-rationale"><div><strong>service:</strong> Crack pie — specific named signature item</div><div><strong>attributes:</strong> 'Very happy and engaged' staff are generic positive adjectives, not operational specifics</div><div><strong>outcome:</strong> 'Amazing' and 'will be returning' are generic satisfaction statements without concrete resolution</div><div><strong>occasion:</strong> No visit context provided</div><div><strong>descriptive_depth:</strong> Pure praise with no sensory detail, comparison, or concrete reasoning</div></div></div></div>
+<div class="example"><div class="example-bucket">Trust/quality-matchable</div><div class="example-card"><div class="example-id">[r_003] &middot; confidence: medium</div><div class="example-text">&ldquo;I had no idea Milk Bar had a Las Vegas location. I was so excited to come here and it didn't disappoint at all. What an ...&rdquo;</div><div class="example-labels"><span class="label-chip active">service=1</span><span class="label-chip active">attributes=1</span><span class="label-chip active">outcome=1</span><span class="label-chip active">occasion=1</span><span class="label-chip active">descriptive_depth=1</span></div><div class="example-rationale"><div><strong>service:</strong> Mentions 'soft serve and cookies' generically, plus 'popular items' — no specific named products</div><div><strong>attributes:</strong> 'Awesome' customer service is generic praise; no operational specifics mentioned</div><div><strong>outcome:</strong> 'Didn't disappoint' and 'can't go wrong' are generic satisfaction statements without concrete resolution</div><div><strong>occasion:</strong> First visit to Las Vegas location implied ('had no idea Milk Bar had a Las Vegas location'), but not explicitly framed as a specific occasion</div><div><strong>descriptive_depth:</strong> Sensory metaphor ('8-year old dreams of sugar and desserts') adds some color, but mostly generic praise without concrete reasoning</div></div></div><div class="example-card"><div class="example-id">[r_065] &middot; confidence: medium</div><div class="example-text">&ldquo;What a sweet surprise, found a Milk Bar in Vegas :D It was nice to get a taste of this NY treat in NV. They have creativ...&rdquo;</div><div class="example-labels"><span class="label-chip active">service=1</span><span class="label-chip active">attributes=1</span><span class="label-chip active">outcome=1</span><span class="label-chip active">occasion=1</span><span class="label-chip active">descriptive_depth=1</span></div><div class="example-rationale"><div><strong>service:</strong> Generic categories (cookies, truffles, desserts) without specific named items like 'compost cookie' or 'crack pie'</div><div><strong>attributes:</strong> 'Pricier side', 'friendly', 'good sense of humor', 'quality ingredients' are all generic praise or vague descriptors without operational specifics</div><div><strong>outcome:</strong> 'Got a taste' is a generic consumption outcome with no problem-resolution arc</div><div><strong>occasion:</strong> 'Found a Milk Bar in Vegas' + 'NY treat in NV' suggests vacation context but remains generic</div><div><strong>descriptive_depth:</strong> Multiple positive claims but no concrete reasoning — no sensory detail, no comparisons, no quantities, no specific incidents</div></div></div></div>
+<div class="example"><div class="example-bucket">Low-retrievability</div><div class="example-card"><div class="example-id">[r_007] &middot; confidence: high</div><div class="example-text">&ldquo;Milk Bar is what dreams are made of. Their cakes and shakes are unbeatable and the perfect way to end a great day in Veg...&rdquo;</div><div class="example-labels"><span class="label-chip active">service=1</span><span class="label-chip">attributes=0</span><span class="label-chip active">outcome=1</span><span class="label-chip active">occasion=1</span><span class="label-chip">descriptive_depth=0</span></div><div class="example-rationale"><div><strong>service:</strong> Generic categories ('cakes', 'shakes') without specific item names</div><div><strong>attributes:</strong> No concrete operational or sensory attributes mentioned</div><div><strong>outcome:</strong> 'Perfect way to end a great day' is generic satisfaction, not a specific outcome</div><div><strong>occasion:</strong> 'End a great day in Vegas' indicates vacation context but remains generic</div><div><strong>descriptive_depth:</strong> Pure praise ('dreams are made of', 'unbeatable') with no concrete reasoning or detail</div></div></div><div class="example-card"><div class="example-id">[r_031] &middot; confidence: high</div><div class="example-text">&ldquo;Nice treat. They are doing something no one else is doing. Worth a visit or two. Usually a line due to popularity.&rdquo;</div><div class="example-labels"><span class="label-chip">service=0</span><span class="label-chip active">attributes=1</span><span class="label-chip">outcome=0</span><span class="label-chip">occasion=0</span><span class="label-chip">descriptive_depth=0</span></div><div class="example-rationale"><div><strong>service:</strong> No specific item named — 'treat' is generic category</div><div><strong>attributes:</strong> 'Usually a line due to popularity' is a concrete operational attribute; 'nice' is generic filler</div><div><strong>outcome:</strong> No outcome described</div><div><strong>occasion:</strong> No occasion indicated</div><div><strong>descriptive_depth:</strong> Generic praise ('nice', 'doing something no one else is doing') without concrete reasoning or sensory detail</div></div></div></div>
+</section>
+
+<section id="confidence">
+  <h2>Labeling Confidence</h2>
+  <p>The labeler self-reported confidence on each review:</p>
+  <ul>
+    <li>High confidence: 93 (93.0%)</li>
+    <li>Medium confidence: 7 (7.0%)</li>
+    <li>Low confidence: 0 (0.0%)</li>
+  </ul>
+  <p>Low-confidence assignments are reviews where the rubric is genuinely ambiguous.
+  They are flagged in the JSON output for optional human review.</p>
+</section>
+
+<footer>
+  <p>This is a prototype diagnostic. Findings are based on the provided review corpus
+  alone and do not account for review recency, geographic relevance, or query-specific
+  retrieval behavior. The retrieval bucket assignments reflect what each review&#8217;s
+  content enables, not whether the review is &#8220;good.&#8221;</p>
+  <p class="footer-fixed">Retrievability is a structural property of review content &#x2014;
+  not a judgment of review quality.</p>
+</footer>
+
+</body>
+</html>
