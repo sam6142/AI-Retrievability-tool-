@@ -78,6 +78,40 @@ Schema in `review_tool/schemas/corpus_report.json`. Top-level structure:
 
 The runtime output uses `bucket` (no qualifier — it's the assigned bucket for this review). The gold set fixture uses `expected_bucket` (because the gold has a target bucket the labeler is being evaluated against). They refer to the same concept; the field name differs by context.
 
+## report.html
+
+A self-contained HTML file written alongside `report.json` and `report.txt`. Opens offline in any modern browser. No external dependencies, no CDN links, no JavaScript.
+
+### Layout (top to bottom)
+
+1. **Header** — project name, business type, review count, generation date.
+2. **Headline** — large `ai_visibility_pct` numeral (visual focal point) + bucket counts. Thin-corpus note if `total_reviews < 20`.
+3. **Bucket Distribution** — single horizontal stacked-bar SVG (yellow = SAM, light-gray = TQM, dark-gray = LR). Segment labels appear inline when the segment is wide enough; a legend is always shown below.
+4. **Dimension Coverage** — five horizontal bar SVGs; yellow fill on dark-gray track. Weakest dimension label is highlighted yellow with a `◄` marker.
+5. **Business Profile** — inferred services, attributes, customer contexts as bullet lists. Profile confidence shown. Low-confidence note if `confidence == "low"`.
+6. **Examples** — up to 3 cards per bucket. Each card shows: review ID, confidence, review text (truncated at 120 chars), dimension score chips (active chips highlighted yellow), per-dimension rationale.
+7. **Labeling Confidence** — high/medium/low counts and percentages.
+8. **Footer** — caveats + fixed line: "Retrievability is a structural property of review content — not a judgment of review quality."
+
+### Style
+
+- Background: `#000000`
+- Accent / headings / chart fills: `#FFE600`
+- Body text: `#EEEEEE`
+- Borders and dividers: `#333333`
+- Three colors only; no gradients, no shadows, no decorative elements.
+- System font stack; no web fonts.
+
+### Wording
+
+Same rules as `report.txt`. The fixed footer line replaces free-form CAVEATS prose.
+
+### Implementation
+
+`render_html_report(report: dict) -> str` in `review_tool/report.py`. `write_report()` calls it and writes `report.html`.
+
+---
+
 ## report.txt
 
 A templated, human-readable summary. The agency will read this in their terminal or paste it into a deck or email to a client. Wording is fixed; only the numbers vary.

@@ -6,6 +6,45 @@ Update after every stage. Newest entries on top.
 
 ---
 
+## 2026-04-28 — Session 4.1: HTML report renderer
+
+**Status:** `render_html_report` added to `review_tool/report.py`. `write_report` now emits `report.html` alongside `report.json` and `report.txt`. 584 fast tests passing (571 → 584; 13 new HTML tests).
+
+**Completed:**
+
+- **`review_tool/report.py`** — added:
+  - `_HTML_CSS` module-level string constant (inline CSS; pure black/yellow/light-gray palette).
+  - `_h()`, `_ha()` — HTML content and attribute escape helpers.
+  - `_html_bullet_list()` — `<ul>` from a list of strings.
+  - `_chip()` — dimension score chip with `active` class when score ≥ 1.
+  - `_svg_bucket_bar(b1, b2, b3, total)` — single stacked-bar SVG. Yellow = SAM, light-gray = TQM, dark-gray = LR. Inline count labels when segment ≥ 70 px wide. `aria-label` for accessibility.
+  - `_svg_dimension_bars(dim, weakest)` — five horizontal bars. Yellow fill on #333 track. Weakest dimension label highlighted yellow with `◄` marker.
+  - `_html_examples_section(epb, lookup)` — one card per example review: ID, confidence, truncated text, dimension score chips, per-dimension rationale.
+  - `render_html_report(report: dict) -> str` — assembles the full self-contained HTML string. No external deps, no JS.
+  - Updated `write_report()` to also write `report.html`.
+
+- **`tests/test_report.py`** — 13 new `@pytest.mark.fast` tests:
+  - `test_html_starts_with_doctype` — output begins with `<!DOCTYPE html>`
+  - `test_html_contains_headline_percentage` — formatted `ai_pct` string present
+  - `test_html_framing_no_bad/no_improve/no_good_enough` — framing-rule wording assertions
+  - `test_html_svg_bucket_bar_present` / `test_html_svg_dimension_bars_present` — aria-label checks
+  - `test_html_svg_rect_elements_present` — `<rect` in output
+  - `test_html_all_bucket_names_present` — all three bucket labels
+  - `test_html_thin_corpus_note_present/absent_at_20` — thin-corpus boundary
+  - `test_html_low_profile_confidence_note_present` — low-confidence note
+  - `test_html_example_review_text_appears` — review text in examples section
+
+- **`docs/report-design.md`** — added `## report.html` section documenting layout, style tokens, and implementation reference.
+
+**Decisions:**
+- All variable HTML blocks (SVG charts, bullet lists, examples) are pre-rendered before the main f-string template to avoid complex nested expressions in Python 3.11.
+- Three-color constraint enforced: yellow (#FFE600), light gray (#EEEEEE), dark gray (#333333) on black (#000000). Dark-gray LR segment uses the same token as borders/dividers — within the palette.
+- Inline labels appear in SVG segments only when segment width ≥ 70 px; legend below the bar covers all cases.
+
+**Next: Prompt iteration (Session 4.x)**
+
+---
+
 ## 2026-04-28 — Session 3.2: Final integration testing and handoff — PROTOTYPE COMPLETE
 
 **Status:** Prototype complete. All 571 fast tests still passing. Full pipeline validated on Milk Bar (100 reviews). Dev-split agreement re-confirmed at 78.6%. `HANDOFF.md` written.

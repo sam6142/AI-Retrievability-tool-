@@ -7,7 +7,7 @@ from __future__ import annotations
 import pytest
 import jsonschema
 
-from review_tool.report import build_report, render_text_report
+from review_tool.report import build_report, render_html_report, render_text_report
 
 # ── Test data helpers ────────────────────────────────────────────────────────
 
@@ -344,3 +344,112 @@ def test_render_all_example_bucket_labels_present_even_when_empty():
     assert "Service/attribute-matchable" in text
     assert "Trust/quality-matchable" in text
     assert "Low-retrievability" in text
+
+
+# ── render_html_report: structural ──────────────────────────────────────────
+
+@pytest.mark.fast
+def test_html_starts_with_doctype():
+    """render_html_report returns a string that starts with <!DOCTYPE html>."""
+    report = _build()
+    assert render_html_report(report).startswith("<!DOCTYPE html>")
+
+
+@pytest.mark.fast
+def test_html_contains_headline_percentage():
+    """The formatted ai_visibility_pct appears verbatim in the HTML output."""
+    scored = [
+        _scored("r_001", "service_attribute_matchable"),
+        _scored("r_002", "service_attribute_matchable"),
+        _scored("r_003", "low_retrievability"),
+    ]
+    report = _build(scored_reviews=scored, corpus_stats=_stats(3, 2, 0, 1))
+    # ai_pct = (2 + 0) / 3 * 100 = 66.7
+    assert "66.7%" in render_html_report(report)
+
+
+# ── render_html_report: framing rules ───────────────────────────────────────
+
+@pytest.mark.fast
+def test_html_framing_no_bad():
+    """'bad' never appears in the rendered HTML — the tool does not judge quality."""
+    assert "bad" not in render_html_report(_build()).lower()
+
+
+@pytest.mark.fast
+def test_html_framing_no_improve():
+    """'improve' never appears in the rendered HTML."""
+    assert "improve" not in render_html_report(_build()).lower()
+
+
+@pytest.mark.fast
+def test_html_framing_no_good_enough():
+    """'good enough' never appears in the rendered HTML."""
+    assert "good enough" not in render_html_report(_build()).lower()
+
+
+# ── render_html_report: SVG chart elements ──────────────────────────────────
+
+@pytest.mark.fast
+def test_html_svg_bucket_bar_present():
+    """HTML output contains the bucket distribution stacked-bar SVG."""
+    assert 'aria-label="Bucket distribution stacked bar"' in render_html_report(_build())
+
+
+@pytest.mark.fast
+def test_html_svg_dimension_bars_present():
+    """HTML output contains the dimension coverage SVG."""
+    assert 'aria-label="Dimension coverage chart"' in render_html_report(_build())
+
+
+@pytest.mark.fast
+def test_html_svg_rect_elements_present():
+    """SVG charts use <rect> elements drawn from the data."""
+    assert "<rect" in render_html_report(_build())
+
+
+# ── render_html_report: content completeness ────────────────────────────────
+
+@pytest.mark.fast
+def test_html_all_bucket_names_present():
+    """All three bucket names appear in the HTML output."""
+    out = render_html_report(_build()).lower()
+    assert "service/attribute-matchable" in out
+    assert "trust/quality-matchable" in out
+    assert "low-retrievability" in out
+
+
+@pytest.mark.fast
+def test_html_thin_corpus_note_present():
+    """Thin corpus note appears in the HTML when total_reviews < 20."""
+    scored = [_scored(f"r_{i:03}", "low_retrievability") for i in range(1, 6)]
+    report = _build(scored_reviews=scored, corpus_stats=_stats(5, 0, 0, 5), metadata=_metadata(5, 5))
+    assert "fewer than 20 reviews" in render_html_report(report)
+
+
+@pytest.mark.fast
+def test_html_thin_corpus_note_absent_at_20():
+    """Thin corpus note is absent when total_reviews == 20."""
+    scored = [_scored(f"r_{i:03}", "low_retrievability") for i in range(1, 21)]
+    report = _build(scored_reviews=scored, corpus_stats=_stats(20, 0, 0, 20), metadata=_metadata(20, 20))
+    assert "fewer than 20 reviews" not in render_html_report(report)
+
+
+@pytest.mark.fast
+def test_html_low_profile_confidence_note_present():
+    """Low profile confidence note appears in the HTML when confidence is 'low'."""
+    report = _build(profile=_profile("low"))
+    assert "too thin or generic" in render_html_report(report)
+
+
+@pytest.mark.fast
+def test_html_example_review_text_appears():
+    """A distinctive review text appears in the HTML examples section."""
+    unique = "Exceptional almond croissant with Normandy butter and Maldon salt flakes"
+    scored = [
+        _scored("r_001", "service_attribute_matchable", text=unique),
+        _scored("r_002", "trust_quality_matchable"),
+        _scored("r_003", "low_retrievability"),
+    ]
+    report = _build(scored_reviews=scored)
+    assert unique in render_html_report(report)
